@@ -8,5 +8,7 @@ import { Accounts } from './entities/accounts.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Staff, UserGroups, Positions, Divisions, Accounts])],
+    controllers: [],
+    providers: []
 })
 export class StaffModule { }
