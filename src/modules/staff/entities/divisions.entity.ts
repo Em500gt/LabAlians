@@ -6,9 +6,9 @@ export class Divisions {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     division: string;
 
-    @OneToMany(() => Staff, staff => staff.division)
+    @OneToMany(() => Staff, staff => staff.divisionID)
     staff: Staff[];
 } 

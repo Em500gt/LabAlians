@@ -8,15 +8,15 @@ export class AccountUpdateDto {
     @Matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/, {
         message: 'Password too weak. It must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
     })
-    password?: string;
+    readonly password?: string;
 
     @IsNumber()
     @IsOptional()
     @Min(1, { message: "userGroupID must be at least 1 " })
-    userGroupID: number;
+    readonly userGroupID?: number;
 
     @IsNumber()
     @IsOptional()
     @Min(1, { message: "staffID must be at least 1 " })
-    staffID: number;
+    readonly staffID?: number;
 }
