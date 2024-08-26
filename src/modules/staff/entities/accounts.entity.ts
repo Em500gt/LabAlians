@@ -13,7 +13,7 @@ export class Accounts {
     @Column()
     password: string;
 
-    @OneToOne(() => StaffGroups, staffGroup => staffGroup.accounts)
+    @ManyToOne(() => StaffGroups, staffGroup => staffGroup.accounts)
     @JoinColumn({ name: "staffGroupID" })
     staffGroup: StaffGroups;
 

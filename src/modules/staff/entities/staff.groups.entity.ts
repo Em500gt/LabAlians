@@ -1,5 +1,5 @@
 import { Accounts } from "src/modules/staff/entities/accounts.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class StaffGroups {
@@ -21,7 +21,7 @@ export class StaffGroups {
     @Column()
     canAccessFiles: boolean;
 
-    @OneToOne(() => Accounts, accounts => accounts.staffGroup)
+    @OneToMany(() => Accounts, accounts => accounts.staffGroup)
     accounts: Accounts[];
 
 }

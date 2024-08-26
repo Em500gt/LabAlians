@@ -12,6 +12,7 @@ import { PositionDto } from "./dto/position.dto";
 import { StaffGroups } from "./entities/staff.groups.entity";
 import { StaffGroupsDto } from "./dto/staff.groups.dto";
 import { UpdateStaffGroupsDto } from "./dto/staff.groups.update.dto";
+import { HashPasswordPipe } from "src/pipes/hash.password.pipe";
 
 
 
@@ -19,13 +20,14 @@ import { UpdateStaffGroupsDto } from "./dto/staff.groups.update.dto";
 export class StaffController {
     constructor(private staffService: StaffService) { }
 
-    // @Get('all')
-    // async findStaff() {
-    //     return await this.staffService.findUser();
-    // }
+    @Get('all')
+    async findStaff() {
+        return await this.staffService.findUser();
+    }
 
     @Post('create')
-    async createStaff(@Body() body: CombinedDto): Promise<Staff> {
+    @UsePipes(HashPasswordPipe)
+    async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.addUser(body);
     }
 
@@ -54,7 +56,7 @@ export class StaffController {
     @Delete('division/:id')
     async deleteDivision(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.staffService.deleteDivision(id);
-    }  
+    }
 
     @Get('position')
     async getPosition(): Promise<Positions[]> {
@@ -78,13 +80,11 @@ export class StaffController {
 
     @Post('staffgroups')
     async createStaffGroups(@Body() body: StaffGroupsDto): Promise<{ message: string }> {
-        console.log(body);
-        
         return await this.staffService.createStaffGroups(body);
     }
 
     @Patch('staffgroups/:id')
-    async updateStaffGroups(@Param('id', ValidateIdPipe) id: number, @Body() body: UpdateStaffGroupsDto): Promise<{message: string}> {
+    async updateStaffGroups(@Param('id', ValidateIdPipe) id: number, @Body() body: UpdateStaffGroupsDto): Promise<{ message: string }> {
         return this.staffService.updateStaffGroups(id, body);
     }
 
@@ -92,5 +92,4 @@ export class StaffController {
     async deleteStaffGroups(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.staffService.deleteStaffGroups(id);
     }
-
 }

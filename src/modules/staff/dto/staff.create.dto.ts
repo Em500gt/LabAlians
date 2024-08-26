@@ -22,12 +22,10 @@ export class StaffCreateDto {
     @IsNotEmpty({ message: 'positionID is required' })
     @IsNumber({}, { message: 'positionID must be a number' })
     @Min(1, { message: 'positionID must be at least 1' })
-    // @Transform(({value}) => ({id: value}), {toClassOnly: true})
     readonly positionID: number;
 
     @IsNotEmpty({ message: 'divisionID is required' })
     @IsNumber({}, { message: 'divisionID must be a number' })
     @Min(1, { message: 'divisionID must be at least 1' })
-    // @Transform(({value}) => ({id: value}), {toClassOnly: true})
     readonly divisionID: number;
 }

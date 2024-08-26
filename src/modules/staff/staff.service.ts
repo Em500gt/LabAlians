@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CombinedDto } from "./dto/combined.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Staff } from './entities/staff.entity';
-import { DeepPartial, Repository } from "typeorm";
+import { EntityManager, Repository } from "typeorm";
 import { Accounts } from "./entities/accounts.entity";
 import { StaffCreateDto } from "./dto/staff.create.dto";
 import { DivisionDto } from "./dto/division.dto";
@@ -12,10 +12,12 @@ import { PositionDto } from "./dto/position.dto";
 import { StaffGroups } from "./entities/staff.groups.entity";
 import { StaffGroupsDto } from "./dto/staff.groups.dto";
 import { UpdateStaffGroupsDto } from "./dto/staff.groups.update.dto";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class StaffService {
     constructor(
+        private configService: ConfigService,
         @InjectRepository(Staff)
         private staffRepository: Repository<Staff>,
         @InjectRepository(Accounts)
@@ -32,38 +34,51 @@ export class StaffService {
         return this.staffRepository.find({ relations: ['positionID', 'divisionID'] });
     }
 
-    async addUser(body: CombinedDto): Promise<Staff> {
-        const position = await this.positionRepository.findOne({ where: { id: body.positionID } });
+    async addUser(body: CombinedDto): Promise<{ message: string }> {
+        try {
+            return await this.staffRepository.manager.transaction(async (transactionalEntityManager: EntityManager) => {
+                const position = await transactionalEntityManager.findOne(Positions, { where: { id: body.positionID } });
+                if (!position) {
+                    throw new NotFoundException('Position not found');
+                }
 
-        if (!position) {
-            throw new Error('Position not found');
+                const division = await transactionalEntityManager.findOne(Divisions, { where: { id: body.divisionID } });
+                if (!division) {
+                    throw new NotFoundException('Division not found');
+                }
+
+                const existingAccount = await transactionalEntityManager.findOne(Accounts, { where: { login: body.login } });
+                if (existingAccount) {
+                    throw new BadRequestException('Login already exists');
+                }
+
+                const staffGroup = await transactionalEntityManager.findOne(StaffGroups, { where: { id: body.staffGroupID } })
+                if (!staffGroup) {
+                    throw new NotFoundException('Staff group not found')
+                }
+
+                const staff = await transactionalEntityManager.save(Staff, {
+                    firstname: body.firstname,
+                    lastname: body.lastname,
+                    tabelNum: body.tabelNum,
+                    positionID: position,
+                    divisionID: division,
+                });
+
+                await transactionalEntityManager.save(Accounts, {
+                    login: body.login,
+                    password: body.password,
+                    staffGroup: staffGroup,
+                    staff: staff,
+                });
+
+                return { message: 'Staff created successfully' };
+
+            })
+        } catch (error) {
+            console.error('Transaction failed:', error);
+            throw new InternalServerErrorException('An error occurred while processing the transaction.');
         }
-
-        const division = await this.divisionRepository.findOne({ where: { id: body.divisionID }, });
-
-        if (!division) {
-            throw new Error('Division not found');
-        }
-
-        // const staff = this.staffRepository.create({
-        //     firstname: body.firstname,
-        //     lastname: body.lastname,
-        //     tabelNum: body.tabelNum,
-        //     positionID: position,
-        //     divisionID: division
-        // });
-        /// console.log(division)
-
-        const staff: DeepPartial<Staff> = {
-            firstname: body.firstname,
-            lastname: body.lastname,
-            tabelNum: body.tabelNum,
-            positionID: { id: body.positionID } as Positions,
-            divisionID: { id: body.divisionID } as Divisions
-        };
-
-        const newUser = this.staffRepository.create(staff)
-        return await this.staffRepository.save(newUser);
     }
 
     async getDivision(): Promise<Divisions[]> {

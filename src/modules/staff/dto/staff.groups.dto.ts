@@ -1,29 +1,24 @@
 import { IsString, IsBoolean, IsOptional, Length, IsNotEmpty } from 'class-validator';
 
 export class StaffGroupsDto {
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'User group is required' })
     @IsString()
     @Length(1, 50)
-    @IsOptional()
     userGroup: string; // User, Admin, etc.
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'canAddRecords is required' })
     @IsBoolean()
-    @IsOptional()
     canAddRecords: boolean;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'canEditRecords is required' })
     @IsBoolean()
-    @IsOptional()
     canEditRecords: boolean;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'canDeleteRecords is required' })
     @IsBoolean()
-    @IsOptional()
     canDeleteRecords: boolean;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'canAccessFiles is required' })
     @IsBoolean()
-    @IsOptional()
     canAccessFiles: boolean;
 }

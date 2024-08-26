@@ -17,12 +17,12 @@ export class AccountCreateDto {
     readonly password: string;
 
     @IsNumber()
-    @IsNotEmpty({message: 'userGroupID is required'})
-    @Min(1, {message: "userGroupID must be at least 1 "})
-    readonly userGroupID: number;
+    @IsNotEmpty({message: 'staffGroupID is required'})
+    @Min(1, {message: "staffGroupID must be at least 1 "})
+    readonly staffGroupID: number;
 
-    @IsNumber()
-    @IsNotEmpty({message: 'staffID is required'})
-    @Min(1, {message: "staffID must be at least 1 "})
-    readonly staffID: number;
+    // @IsNumber()
+    // @IsNotEmpty({message: 'staffID is required'})
+    // @Min(1, {message: "staffID must be at least 1 "})
+    // readonly staffID: number;
 }
