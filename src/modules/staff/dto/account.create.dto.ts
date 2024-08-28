@@ -20,9 +20,4 @@ export class AccountCreateDto {
     @IsNotEmpty({message: 'staffGroupID is required'})
     @Min(1, {message: "staffGroupID must be at least 1 "})
     readonly staffGroupID: number;
-
-    // @IsNumber()
-    // @IsNotEmpty({message: 'staffID is required'})
-    // @Min(1, {message: "staffID must be at least 1 "})
-    // readonly staffID: number;
 }
