@@ -13,7 +13,7 @@ export class Accounts {
     @Column()
     password: string;
 
-    @ManyToOne(() => StaffGroups, staffGroup => staffGroup.accounts)
+    @ManyToOne(() => StaffGroups, staffGroup => staffGroup.accounts,  { onDelete: 'CASCADE' })
     @JoinColumn({ name: "staffGroupID" })
     staffGroup: StaffGroups;
 

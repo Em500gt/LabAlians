@@ -1,33 +1,18 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CombinedDto, CombinedUpdateDto } from "../dto/combined.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Staff } from '../entities/staff.entity';
 import { EntityManager, Repository } from "typeorm";
 import { Accounts } from "../entities/accounts.entity";
-import { StaffCreateDto } from "../dto/staff.create.dto";
-import { DivisionDto } from "../dto/division.dto";
 import { Divisions } from "../entities/divisions.entity";
 import { Positions } from "../entities/positions.entity";
-import { PositionDto } from "../dto/position.dto";
 import { StaffGroups } from "../entities/staff.groups.entity";
-import { StaffGroupsDto } from "../dto/staff.groups.dto";
-import { UpdateStaffGroupsDto } from "../dto/staff.groups.update.dto";
-import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class StaffService {
     constructor(
-        private configService: ConfigService,
         @InjectRepository(Staff)
         private staffRepository: Repository<Staff>,
-        @InjectRepository(Accounts)
-        private accountRepository: Repository<Accounts>,
-        // @InjectRepository(Divisions)
-        // private divisionRepository: Repository<Divisions>,
-        // @InjectRepository(Positions)
-        // private positionRepository: Repository<Positions>,
-        // @InjectRepository(StaffGroups)
-        // private staffGroupsRepository: Repository<StaffGroups>
     ) { }
 
     async findStaff(): Promise<Staff[]> {
@@ -107,5 +92,13 @@ export class StaffService {
                 throw new InternalServerErrorException('An error occurred while processing the transaction.');
             }
         })
+    }
+
+    async deleteStaff(id: number): Promise<{ message: string }> {
+        const result = await this.staffRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Position wi ID ${id} not found`);
+        }
+        return { message: `Position with ID ${id} succesfully deleted` };
     }
 }

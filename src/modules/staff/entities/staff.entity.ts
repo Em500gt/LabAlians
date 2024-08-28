@@ -15,15 +15,15 @@ export class Staff {
     @Column()
     lastname: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     tabelNum: number;
 
     @ManyToOne(() => Positions, position => position.staff)
     @JoinColumn({ name: "positionID" })
     positionID: Positions;
 
-    @OneToOne(() => Accounts, account => account.staff)
-    account: Accounts; 
+    @OneToOne(() => Accounts, account => account.staff,  { onDelete: 'CASCADE' })
+    account: Accounts;
 
     @ManyToOne(() => Divisions, division => division.staff)
     @JoinColumn({ name: "divisionID" })

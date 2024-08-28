@@ -17,15 +17,19 @@ export class StaffController {
     }
 
     @Post()
-    @UsePipes(HashPasswordPipe, ValidateAndTransformPipe)
-    async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
+    async createStaff(@Body(ValidateAndTransformPipe, HashPasswordPipe) body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.createStaff(body);
     }
 
     @Patch(':id')
     @UsePipes(HashPasswordPipe)
-    async updateStaff(@Param('id', ValidateIdPipe) id: number, @Body(ValidateAndTransformPipe) body: CombinedUpdateDto): Promise<{ message: string }> {
+    async updateStaff(@Param('id', ValidateIdPipe) id: number, @Body(ValidateAndTransformPipe, HashPasswordPipe) body: CombinedUpdateDto): Promise<{ message: string }> {
         return await this.staffService.updateStaff(id, body); 
+    }
+
+    @Delete(':id')
+    async deleteStaff(@Param('id', ValidateIdPipe) id: number): Promise<{message: string}>{
+        return await this.staffService.deleteStaff(id);
     }
 
 }

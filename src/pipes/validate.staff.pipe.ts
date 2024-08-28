@@ -27,6 +27,11 @@ export class ValidateAndTransformPipe implements PipeTransform {
     ) { }
 
     async transform(value: any) {
+
+        if (!value || Object.keys(value).length === 0) {
+            throw new BadRequestException('Empty request body. No data to update.');
+        }
+        
         if (value.login) {
             const existingAccount = await this.accountRepository.findOne({ where: { login: value.login } });
             if (existingAccount) {
@@ -67,7 +72,6 @@ export class ValidateAndTransformPipe implements PipeTransform {
             }
             staffGroupID = staffGroup.id;
         }
-
 
         return {
             ...value,
