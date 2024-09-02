@@ -16,6 +16,10 @@ export class DivisionService {
     }
 
     async createDivision(body: DivisionDto): Promise<{ message: string }> {
+        const divisionFind = await this.divisionRepository.findOne({ where: { division: body.division } })
+        if (divisionFind) {
+            throw new BadRequestException('Division already exists');
+        }
         try {
             const division = await this.divisionRepository.save(body);
             return { message: `Division "${division.division}" created successfully` };

@@ -22,7 +22,7 @@ export class Staff {
     @JoinColumn({ name: "positionID" })
     positionID: Positions;
 
-    @OneToOne(() => Accounts, account => account.staff,  { onDelete: 'CASCADE' })
+    @OneToOne(() => Accounts, account => account.staff,  { cascade: true, onDelete: 'CASCADE' })
     account: Accounts;
 
     @ManyToOne(() => Divisions, division => division.staff)

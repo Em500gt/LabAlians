@@ -10,12 +10,14 @@ export class StaffGroupsService {
     constructor(
         @InjectRepository(StaffGroups)
         private staffGroupsRepository: Repository<StaffGroups>
-    ) {}
+    ) { }
+
     async getStaffGroups(): Promise<StaffGroups[]> {
         return await this.staffGroupsRepository.find();
     }
 
     async createStaffGroups(body: StaffGroupsDto): Promise<{ message: string }> {
+        await this.staffGroupFind(body.userGroup);
         try {
             const staffGroup = await this.staffGroupsRepository.save(body);
             return { message: `Staff group "${staffGroup.userGroup}" created successfully` };
@@ -39,5 +41,12 @@ export class StaffGroupsService {
             throw new NotFoundException(`Staff group with ID ${id} not found`);
         }
         return { message: `Staff group with ID ${id} successfully deleted` };
+    }
+
+    private async staffGroupFind(userGroup: string): Promise<void> {
+        const staffGroup = await this.staffGroupsRepository.findOne({ where: { userGroup } });
+        if (staffGroup) {
+            throw new BadRequestException(`Staff group already exists`);
+        }
     }
 }

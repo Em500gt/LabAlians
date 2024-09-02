@@ -16,6 +16,10 @@ export class PositionService {
     }
 
     async createPosition(body: PositionDto): Promise<{ message: string }> {
+        const positionFind = await this.positionRepository.findOne({ where: { position: body.position } })
+        if (positionFind) {
+            throw new BadRequestException('Position already exists');
+        }
         try {
             const position = await this.positionRepository.save(body);
             return { message: `Position "${position.position}" created successfully` };
