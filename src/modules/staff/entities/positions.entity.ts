@@ -1,4 +1,4 @@
-import { Staff } from "src/modules/staff/entities/staff.entity";
+import { Staff } from "./staff.entity";
 import { Entity, OneToMany, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()

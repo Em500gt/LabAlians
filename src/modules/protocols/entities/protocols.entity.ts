@@ -1,12 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProtocolStatus } from "./protocol.status.entity";
 import { ProtocolFiles } from "./protocol.files.entity";
 import { WorkType } from "./work.type.entity";
 import { ReasonType } from "./reason.type.entity";
-import { ReplaceJournal } from "src/modules/journal/entities/replace.journal.entity";
-import { IssueJournal } from "src/modules/journal/entities/issue.journal.entity";
-import { Customers } from "src/modules/customers/entities/customers.entity";
-import { Staff } from "src/modules/staff/entities/staff.entity";
+import { ReplaceJournal } from "../../journal/entities/replace.journal.entity";
+import { IssueJournal } from "../../journal/entities/issue.journal.entity";
+import { Customers } from "../../customers/entities/customers.entity";
+import { Staff } from "../../staff/entities/staff.entity";
 
 @Entity()
 export class Protocols {

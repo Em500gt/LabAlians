@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 import { CustomerTypes } from "./customer.type.entity";
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
+import { Protocols } from "../../protocols/entities/protocols.entity";
 
 @Entity()
 export class Customers {

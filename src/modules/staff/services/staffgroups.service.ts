@@ -17,10 +17,10 @@ export class StaffGroupsService {
     }
 
     async createStaffGroups(body: StaffGroupsDto): Promise<{ message: string }> {
-        await this.staffGroupFind(body.userGroup);
+        await this.staffGroupFind(body.staffGroup);
         try {
             const staffGroup = await this.staffGroupsRepository.save(body);
-            return { message: `Staff group "${staffGroup.userGroup}" created successfully` };
+            return { message: `Staff group "${staffGroup.staffGroup}" created successfully` };
         } catch (error) {
             throw new BadRequestException('Error creating position');
         }
@@ -43,9 +43,9 @@ export class StaffGroupsService {
         return { message: `Staff group with ID ${id} successfully deleted` };
     }
 
-    private async staffGroupFind(userGroup: string): Promise<void> {
-        const staffGroup = await this.staffGroupsRepository.findOne({ where: { userGroup } });
-        if (staffGroup) {
+    private async staffGroupFind(staffGroup: string): Promise<void> {
+        const group = await this.staffGroupsRepository.findOne({ where: { staffGroup } });
+        if (group) {
             throw new BadRequestException(`Staff group already exists`);
         }
     }

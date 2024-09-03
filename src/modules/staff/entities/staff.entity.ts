@@ -1,7 +1,7 @@
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
-import { Accounts } from "src/modules/staff/entities/accounts.entity";
-import { Divisions } from "src/modules/staff/entities/divisions.entity";
-import { Positions } from "src/modules/staff/entities/positions.entity";
+import { Protocols } from "../../protocols/entities/protocols.entity";
+import { Accounts } from "./accounts.entity";
+import { Divisions } from "./divisions.entity";
+import { Positions } from "./positions.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany, OneToOne } from "typeorm";
 
 @Entity()

@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Param, Patch, Post, Body } from "@nestjs/commo
 import { StaffService } from "../services/staff.service";
 import { Staff } from "../entities/staff.entity";
 import { CombinedDto, CombinedUpdateDto } from "../dto/combined.dto";
-import { ValidateIdPipe } from "src/pipes/validate.id.pipe";
+import { ValidateIdPipe } from "pipes/validate.id.pipe";
 
 
 @Controller('staff')

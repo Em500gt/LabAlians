@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { ValidateIdPipe } from "src/pipes/validate.id.pipe";
+import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { PositionService } from "../services/position.service";
 import { Positions } from "../entities/positions.entity";
 import { PositionDto } from "../dto/position.dto";

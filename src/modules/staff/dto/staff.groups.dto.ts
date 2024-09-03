@@ -4,7 +4,7 @@ export class StaffGroupsDto {
     @IsNotEmpty({ message: 'User group is required' })
     @IsString()
     @Length(1, 50)
-    userGroup: string; // User, Admin, etc.
+    staffGroup: string; // User, Admin, etc.
 
     @IsNotEmpty({ message: 'canAddRecords is required' })
     @IsBoolean()

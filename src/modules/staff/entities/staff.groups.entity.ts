@@ -1,4 +1,4 @@
-import { Accounts } from "src/modules/staff/entities/accounts.entity";
+import { Accounts } from "./accounts.entity";
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -7,7 +7,7 @@ export class StaffGroups {
     id: number;
 
     @Column({ length: 50, unique: true })
-    userGroup: string; // User, Admin, etc.
+    staffGroup: string; // User, Admin, etc.
 
     @Column()
     canAddRecords: boolean;

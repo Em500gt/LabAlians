@@ -1,4 +1,4 @@
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
+import { Protocols } from "../../protocols/entities/protocols.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

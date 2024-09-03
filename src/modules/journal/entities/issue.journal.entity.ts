@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
 import { IssueMethod } from "./issue.method.entity";
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
+import { Protocols } from "../../protocols/entities/protocols.entity";
 
 @Entity()
 export class IssueJournal {

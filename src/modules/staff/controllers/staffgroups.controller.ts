@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { StaffGroupsService } from "../services/staffgroups.service";
 import { StaffGroups } from "../entities/staff.groups.entity";
-import { ValidateIdPipe } from "src/pipes/validate.id.pipe";
+import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { UpdateStaffGroupsDto } from "../dto/staff.groups.update.dto";
 import { StaffGroupsDto } from "../dto/staff.groups.dto";
 

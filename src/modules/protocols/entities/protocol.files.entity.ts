@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, } from "typeorm";
-import { Protocols } from "./protocols.entitiy";
+import { Protocols } from "./protocols.entity";
 
 @Entity()
 export class ProtocolFiles {

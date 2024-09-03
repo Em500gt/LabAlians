@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { Divisions } from "../entities/divisions.entity";
 import { DivisionService } from "../services/division.service";
 import { DivisionDto } from "../dto/division.dto";
-import { ValidateIdPipe } from "src/pipes/validate.id.pipe";
+import { ValidateIdPipe } from "pipes/validate.id.pipe";
 
 @Controller('division')
 export class DivisionController {
