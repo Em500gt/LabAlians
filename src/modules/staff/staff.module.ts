@@ -18,6 +18,7 @@ import { StaffGroupsService } from './services/staffgroups.service';
 @Module({
     imports: [TypeOrmModule.forFeature([Staff, StaffGroups, Positions, Divisions, Accounts])],
     controllers: [StaffController, DivisionController, PositionController, StaffGroupsController],
-    providers: [StaffService, DivisionService, PositionService, StaffGroupsService]
+    providers: [StaffService, DivisionService, PositionService, StaffGroupsService],
+    exports: [StaffService]
 })
 export class StaffModule { }

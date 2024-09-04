@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
+import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
 
 export class Insert1725366646899 implements MigrationInterface {
@@ -10,7 +11,7 @@ export class Insert1725366646899 implements MigrationInterface {
             ('Admin', true, true, true, true)
             RETURNING id
             `)
-            
+
         const divisionID = await queryRunner.query(`
             INSERT INTO "divisions" ("division")
             VALUES 
@@ -31,12 +32,19 @@ export class Insert1725366646899 implements MigrationInterface {
             ('Admin', 'Admin', 1, ${positionID[0]?.id}, ${divisionID[0]?.id})
             RETURNING id
             `)
-        
+        const saltRounds = parseInt(process.env.PASSWORD_SALT as string, 10);
+        const plainPassword = process.env.PASSWORD_ADMIN;
+
+        if(!saltRounds || !plainPassword){
+            throw new Error('Missing environment variables for password hashing')
+        }
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hashedPassword = await bcrypt.hash(plainPassword, salt);
 
         await queryRunner.query(`
             INSERT INTO "accounts" ("login", "password", "staffGroupID", "staffID")
             VALUES
-            ('${process.env.LOGIN_ADMIN}', '${process.env.PASSWORD_ADMIN}', ${staffGroupID[0]?.id}, ${staffID[0]?.id})
+            ('${process.env.LOGIN_ADMIN}', '${hashedPassword}', ${staffGroupID[0]?.id}, ${staffID[0]?.id})
             `)
     }
 

@@ -48,6 +48,10 @@ export class StaffService {
             .getRawMany();
     }
 
+    async findOne(login: string):  Promise<any>{
+        return await this.accountRepository.findOne({ where: { login } })
+    }
+
     async createStaff(body: CombinedDto): Promise<{ message: string }> {
         await this.validateUniqueLogin(body.login);
         await this.validateUniqueTabelNum(body.tabelNum);

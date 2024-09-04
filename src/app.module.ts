@@ -5,6 +5,7 @@ import { StaffModule } from './modules/staff/staff.module';
 import { ProtocolsModule } from './modules/protocols/protocols.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { JournalModule } from './modules/journal/journal.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { JournalModule } from './modules/journal/journal.module';
     StaffModule,
     ProtocolsModule,
     CustomersModule,
-    JournalModule
+    JournalModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
