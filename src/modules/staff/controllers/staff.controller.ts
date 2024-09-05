@@ -3,14 +3,17 @@ import { StaffService } from "../services/staff.service";
 import { Staff } from "../entities/staff.entity";
 import { CombinedDto, CombinedUpdateDto } from "../dto/combined.dto";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
-import { JwtAuthGuard } from "auth/guard/jwt-auth.guard";
+import { CheckPermissions } from "common/decorators/check-permissions.decorator";
+import { PermissionsGuard } from "auth/guard/permissions.guard";
 
 
 @Controller('staff')
+@UseGuards(PermissionsGuard)
 export class StaffController {
     constructor(private staffService: StaffService) { }
-
+    
     @Get()
+    @CheckPermissions('canEditRecords')
     async findStaff(): Promise<Staff[]> {
         return await this.staffService.findStaff();
     }

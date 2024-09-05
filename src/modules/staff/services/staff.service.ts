@@ -48,10 +48,6 @@ export class StaffService {
             .getRawMany();
     }
 
-    async findOne(login: string):  Promise<any>{
-        return await this.accountRepository.findOne({ where: { login } })
-    }
-
     async createStaff(body: CombinedDto): Promise<{ message: string }> {
         await this.validateUniqueLogin(body.login);
         await this.validateUniqueTabelNum(body.tabelNum);
@@ -137,7 +133,7 @@ export class StaffService {
 
                 return { message: 'Staff updated successfully' };
             } catch (error) {
-                if(error instanceof BadRequestException || error instanceof NotFoundException) {
+                if (error instanceof BadRequestException || error instanceof NotFoundException) {
                     throw error
                 }
                 throw new InternalServerErrorException('An error occurred while processing the transaction.');
@@ -198,5 +194,24 @@ export class StaffService {
             throw new BadRequestException('PASSWORD_SALT is not a valid number');
         }
         return saltRounds;
+    }
+
+    async findOne(login: string): Promise<any> {
+        return await this.accountRepository.findOne({ where: { login } })
+    }
+
+    async findStaffGroup(login: any): Promise<any> {
+        return await this.accountRepository.findOne({
+            where: { login },
+            relations: ['staffGroup'],
+            select: {
+                staffGroup: {
+                    canAddRecords: true,
+                    canEditRecords: true,
+                    canDeleteRecords: true,
+                    canAccessFiles: true
+                }
+            }
+        })
     }
 }

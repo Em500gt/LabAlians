@@ -22,8 +22,10 @@ export class AuthService {
   }
 
   async login(staff: IStaff): Promise<{ token: string }> {
+    const staffGroup = await this.staffService.findStaffGroup(staff.login)
+
     return {
-      token: this.jwtService.sign({ id: staff.id, login: staff.login })
+      token: this.jwtService.sign({ id: staff.id, login: staff.login, staffGroup: staffGroup.staffGroup })
     }
   }
 }
