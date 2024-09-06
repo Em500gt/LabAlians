@@ -19,6 +19,7 @@ export class StaffController {
     }
 
     @Post()
+    @CheckPermissions('canEditRecords')
     async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.createStaff(body);
     }
