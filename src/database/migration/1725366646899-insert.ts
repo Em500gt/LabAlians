@@ -46,6 +46,11 @@ export class Insert1725366646899 implements MigrationInterface {
             VALUES
             ('${process.env.LOGIN_ADMIN}', '${hashedPassword}', ${staffGroupID[0]?.id}, ${staffID[0]?.id})
             `)
+        
+        await queryRunner.query(`
+            INSERT INTO "customer_types" ("type")
+            VALUES('Legal entity'), ('Individual') 
+            `)
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

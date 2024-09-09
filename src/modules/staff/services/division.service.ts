@@ -31,7 +31,7 @@ export class DivisionService {
     async deleteDivision(id: number): Promise<{ message: string }> {
         const result = await this.divisionRepository.delete(id);
         if (result.affected === 0) {
-            throw new NotFoundException(`Division wi ID ${id} not found`);
+            throw new NotFoundException(`Division with ID ${id} not found`);
         }
         return { message: `Division with ID ${id} successfully deleted` };
     }

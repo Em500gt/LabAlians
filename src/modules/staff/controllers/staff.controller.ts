@@ -13,13 +13,13 @@ export class StaffController {
     constructor(private staffService: StaffService) { }
     
     @Get()
-    @CheckPermissions('canEditRecords')
+    // @CheckPermissions('canEditRecords')
     async findStaff(): Promise<Staff[]> {
         return await this.staffService.findStaff();
     }
 
     @Post()
-    @CheckPermissions('canEditRecords')
+    // @CheckPermissions('canEditRecords')
     async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.createStaff(body);
     }
