@@ -23,7 +23,7 @@ export class CustomerTypeService {
 
         try {
             const customerType = await this.customersTypeRepository.save(body);
-            return { message: `Customer type ${customerType.customer} created successfully` }
+            return { message: `Customer type ${customerType.type} created successfully` }
         } catch (error) {
             throw new BadRequestException('Error creating customer type');
         }

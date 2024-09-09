@@ -22,6 +22,11 @@ export class CustomerService {
 
     async createCustomer(body: CustomerCreateDto): Promise<{ message: string }> {
         try {
+            const existingCustomer = await this.customersRepository.findOne({ where: { customerName: body.customerName } })
+            if(existingCustomer){
+                throw new BadRequestException('Customer already exists');
+            }
+
             const customerType = await this.customersTypeRepository.findOne({ where: { id: body.customerTypeID } });
             if (!customerType) {
                 throw new BadRequestException('Customer type not found');
@@ -72,5 +77,4 @@ export class CustomerService {
         }
         return { message: `Staff with ID ${id} successfully deleted` };
     }
-
 }
