@@ -5,8 +5,16 @@ import { ProtocolFiles } from './entities/protocol.files.entity';
 import { ProtocolStatus } from './entities/protocol.status.entity';
 import { ReasonType } from './entities/reason.type.entity';
 import { WorkType } from './entities/work.type.entity';
+import { WorkTypeController } from './controllers/worktype.controller';
+import { ReasonTypeController } from './controllers/reasontype.controller';
+import { WorkTypeService } from './services/worktype.service';
+import { ReasonTypeService } from './services/reasontype.service';
+import { ProtocolFilesController } from './controllers/protocolfiles.controller';
+import { ProtocolFilesService } from './services/protocolfiles.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Protocols, ProtocolFiles, ProtocolStatus, ReasonType, WorkType])],
+    controllers: [WorkTypeController, ReasonTypeController, ProtocolFilesController],
+    providers: [WorkTypeService, ReasonTypeService, ProtocolFilesService]
 })
 export class ProtocolsModule { }

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, } from "typeorm";
 import { Protocols } from "./protocols.entity";
 
 @Entity()
@@ -12,7 +12,7 @@ export class ProtocolFiles {
     @Column({ type: "bytea" })
     pdfData: Buffer;
 
-    @ManyToOne(() => Protocols, protocols => protocols.protocolfile)
-    @JoinColumn({ name: " protocolID" })
-    protocols: Protocols;
+    // @OneToOne(() => Protocols, protocols => protocols.protocolfile)
+    // @JoinColumn({ name: "protocolID" })
+    // protocolID: Protocols;
 }

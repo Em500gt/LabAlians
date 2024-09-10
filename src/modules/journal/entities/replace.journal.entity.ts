@@ -18,6 +18,6 @@ export class ReplaceJournal {
     @Column()
     reason: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.replacejournal)
-    protocols: Protocols[];
+    // @OneToMany(() => Protocols, protocols => protocols.replacejournal)
+    // protocols: Protocols[];
 }

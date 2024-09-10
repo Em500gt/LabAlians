@@ -29,6 +29,6 @@ export class Staff {
     @JoinColumn({ name: "divisionID" })
     divisionID: Divisions;
 
-    @OneToMany(() => Protocols, protocols => protocols.staff)
+    @OneToMany(() => Protocols, protocols => protocols.staffID)
     protocols: Protocols[];
 }

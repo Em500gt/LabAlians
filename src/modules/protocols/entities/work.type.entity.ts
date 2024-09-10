@@ -9,6 +9,8 @@ export class WorkType {
     @Column()
     type: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.worktype)
+    @OneToMany(() => Protocols, protocols => protocols.workTypeID)
     protocols: Protocols[];
+
+    /// тип работ
 }

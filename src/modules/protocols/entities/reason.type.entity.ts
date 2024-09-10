@@ -9,6 +9,8 @@ export class ReasonType {
     @Column()
     type: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.reasontype)
+    @OneToMany(() => Protocols, protocols => protocols.reasonTypeID)
     protocols: Protocols[];
+
+    /// Основание по которому протокол делается 
 }

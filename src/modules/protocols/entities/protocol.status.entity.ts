@@ -9,6 +9,8 @@ export class ProtocolStatus {
     @Column()
     status: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.protocolstatus)
+    @OneToMany(() => Protocols, protocols => protocols.protocolStatusID)
     protocols: Protocols[];
+
+    /// Статус протокола (Действителен, не действителен)
 }

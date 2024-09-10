@@ -20,6 +20,6 @@ export class IssueJournal {
     @JoinColumn({ name: "issueMethodID" })
     issuemethod: IssueMethod;
 
-    @OneToMany(() => Protocols, protocols => protocols.issuejournal)
-    protocols: Protocols[];
+    // @OneToMany(() => Protocols, protocols => protocols.issuejournal)
+    // protocols: Protocols[];
 }

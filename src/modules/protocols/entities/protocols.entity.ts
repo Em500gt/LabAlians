@@ -1,10 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProtocolStatus } from "./protocol.status.entity";
 import { ProtocolFiles } from "./protocol.files.entity";
 import { WorkType } from "./work.type.entity";
 import { ReasonType } from "./reason.type.entity";
-import { ReplaceJournal } from "../../journal/entities/replace.journal.entity";
-import { IssueJournal } from "../../journal/entities/issue.journal.entity";
+// import { ReplaceJournal } from "../../journal/entities/replace.journal.entity";
+// import { IssueJournal } from "../../journal/entities/issue.journal.entity";
 import { Customers } from "../../customers/entities/customers.entity";
 import { Staff } from "../../staff/entities/staff.entity";
 
@@ -39,32 +39,32 @@ export class Protocols {
 
     @ManyToOne(() => ReasonType, reasontype => reasontype.protocols)
     @JoinColumn(({ name: "reasonTypeID" }))
-    reasontype: ReasonType;
+    reasonTypeID: ReasonType;
 
     @ManyToOne(() => WorkType, worktype => worktype.protocols)
     @JoinColumn({ name: "workTypeID" })
-    worktype: WorkType;
+    workTypeID: WorkType;
 
-    @OneToMany(() => ProtocolFiles, protocolfile => protocolfile.protocols)
-    protocolfile: ProtocolFiles[];
+    // @OneToOne(() => ProtocolFiles, protocolfile => protocolfile.protocolID)
+    // protocolfile: ProtocolFiles[];
 
     @ManyToOne(() => ProtocolStatus, protocolstatus => protocolstatus.protocols)
     @JoinColumn({ name: "protocolStatusID" })
-    protocolstatus: ProtocolStatus;
+    protocolStatusID: ProtocolStatus;
 
-    @ManyToOne(() => ReplaceJournal, replacejournal => replacejournal.protocols)
-    @JoinColumn({ name: "replaceJournalID" })
-    replacejournal: ReplaceJournal;
+    // @ManyToOne(() => ReplaceJournal, replacejournal => replacejournal.protocols)
+    // @JoinColumn({ name: "replaceJournalID" })
+    // replacejournal: ReplaceJournal;
 
-    @ManyToOne(() => IssueJournal, issuejournal => issuejournal.protocols)
-    @JoinColumn({ name: "issueJournalID" })
-    issuejournal: IssueJournal;
+    // @ManyToOne(() => IssueJournal, issuejournal => issuejournal.protocols)
+    // @JoinColumn({ name: "issueJournalID" })
+    // issuejournal: IssueJournal;
 
     @ManyToOne(() => Customers, customers => customers.protocols)
     @JoinColumn({ name: "customerID" })
-    customers: Customers;
+    customerID: Customers;
 
     @ManyToOne(() => Staff, staff => staff.protocols)
     @JoinColumn({ name: "staffID" })
-    staff: Staff;
+    staffID: Staff;
 }

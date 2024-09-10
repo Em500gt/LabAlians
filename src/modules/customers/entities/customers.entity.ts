@@ -47,6 +47,6 @@ export class Customers {
     @JoinColumn({ name: "customerTypeID" })
     customerTypeID: CustomerTypes;
 
-    @OneToMany(() => Protocols, protocols => protocols.customers)
+    @OneToMany(() => Protocols, protocols => protocols.customerID)
     protocols: Protocols[];
 }
