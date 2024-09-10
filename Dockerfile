@@ -23,4 +23,4 @@ ENV PORT=$PORT
 EXPOSE $PORT
 
 # Запускаем приложение
-CMD ["sh", "-c", "npm run start:prod"]
+CMD ["sh", "-c", "npm run migrate && npm run start:prod"]
