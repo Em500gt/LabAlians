@@ -8,7 +8,7 @@ import { Divisions } from "../entities/divisions.entity";
 import { Positions } from "../entities/positions.entity";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+const bcrypt = require('bcryptjs');
 
 @Injectable()
 export class StaffService {

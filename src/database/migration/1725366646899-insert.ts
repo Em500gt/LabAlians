@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
-import * as bcrypt from 'bcrypt';
+const bcrypt = require('bcryptjs');
 import 'dotenv/config';
 
 export class Insert1725366646899 implements MigrationInterface {

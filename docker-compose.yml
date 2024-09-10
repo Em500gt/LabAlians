@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=db
+    ports:
+      - "${PORT}:${PORT}"  # Пробрасываем порт из .env файла
+    env_file:
+      - .env  # Указываем путь к .env файлу
+    depends_on:
+      - db  # Зависимость от базы данных
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:prod  # Запуск приложения в продакшн режиме
+    networks:
+      - nest-network
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "${DB_PORT}:5432"  # Пробрасываем порт для PostgreSQL
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - nest-network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  nest-network:
+    driver: bridge
