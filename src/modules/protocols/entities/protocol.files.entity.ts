@@ -12,7 +12,7 @@ export class ProtocolFiles {
     @Column({ type: "bytea" })
     pdfData: Buffer;
 
-    // @OneToOne(() => Protocols, protocols => protocols.protocolfile)
-    // @JoinColumn({ name: "protocolID" })
-    // protocolID: Protocols;
+    @OneToOne(() => Protocols, protocols => protocols.protocolfile)
+    @JoinColumn({ name: "protocolID" })
+    protocolID: Protocols;
 }
