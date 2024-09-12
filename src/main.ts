@@ -9,7 +9,11 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
-
+  appServer.enableCors({
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+  })
   appServer.setGlobalPrefix('api');
   const port = process.env.PORT || 6000;
   await appServer.listen(port);

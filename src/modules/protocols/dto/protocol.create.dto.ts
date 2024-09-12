@@ -58,15 +58,15 @@ export class ProtocolCreateDto { /// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Min(1, { message: 'Protocol status ID must be at least 1' })
     protocolStatusID: number;
 
-    @IsNotEmpty({ message: 'Replace journal ID is required' })
-    @IsNumber({}, { message: 'Replace journal ID must be a number' })
-    @Min(1, { message: 'Replace journal ID must be at least 1' })
-    replaceJournalID: number;
+    // @IsNotEmpty({ message: 'Replace journal ID is required' })
+    // @IsNumber({}, { message: 'Replace journal ID must be a number' })
+    // @Min(1, { message: 'Replace journal ID must be at least 1' })
+    // replaceJournalID: number;
 
-    @IsNotEmpty({ message: 'Issue journal ID is required' })
-    @IsNumber({}, { message: 'Issue journal ID must be a number' })
-    @Min(1, { message: 'Issue journal ID must be at least 1' })
-    issueJournalID: number;
+    // @IsNotEmpty({ message: 'Issue journal ID is required' })
+    // @IsNumber({}, { message: 'Issue journal ID must be a number' })
+    // @Min(1, { message: 'Issue journal ID must be at least 1' })
+    // issueJournalID: number;
 
     @IsNotEmpty({ message: 'Customer ID is required' })
     @IsNumber({}, { message: 'Customer ID must be a number' })

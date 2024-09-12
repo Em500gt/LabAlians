@@ -13,7 +13,7 @@ export class Protocols {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ type: 'boolean' }) 
     isAccreditation: boolean;
 
     @Column()
@@ -37,18 +37,18 @@ export class Protocols {
     @Column()
     note: string;
 
-    @ManyToOne(() => ReasonType, reasontype => reasontype.protocols)
+    @ManyToOne(() => ReasonType, reasontype => reasontype.protocols, { nullable: true })
     @JoinColumn(({ name: "reasonTypeID" }))
     reasonTypeID: ReasonType;
 
-    @ManyToOne(() => WorkType, worktype => worktype.protocols)
+    @ManyToOne(() => WorkType, worktype => worktype.protocols, { nullable: true })
     @JoinColumn({ name: "workTypeID" })
     workTypeID: WorkType;
 
-    // @OneToOne(() => ProtocolFiles, protocolfile => protocolfile.protocolID)
-    // protocolfile: ProtocolFiles[];
+    @OneToOne(() => ProtocolFiles, protocolfile => protocolfile.protocolID, { nullable: true })
+    protocolfile: ProtocolFiles[];
 
-    @ManyToOne(() => ProtocolStatus, protocolstatus => protocolstatus.protocols)
+    @ManyToOne(() => ProtocolStatus, protocolstatus => protocolstatus.protocols, { nullable: true })
     @JoinColumn({ name: "protocolStatusID" })
     protocolStatusID: ProtocolStatus;
 
@@ -60,7 +60,7 @@ export class Protocols {
     // @JoinColumn({ name: "issueJournalID" })
     // issuejournal: IssueJournal;
 
-    @ManyToOne(() => Customers, customers => customers.protocols)
+    @ManyToOne(() => Customers, customers => customers.protocols, { nullable: true })
     @JoinColumn({ name: "customerID" })
     customerID: Customers;
 

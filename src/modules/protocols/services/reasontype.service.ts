@@ -20,15 +20,15 @@ export class ReasonTypeService {
     }
 
     async createReasonType(body: ReasonTypeDto): Promise<{ message: string }> {
-        const reasonTypeFind = await this.reasonTypeRepository.findOne({ where: { type: body.type } })
+        const reasonTypeFind = await this.reasonTypeRepository.findOne({ where: { type: body.type } });
         if (reasonTypeFind) {
             throw new BadRequestException('Reason type already exists');
         }
         try {
             const reasonType = await this.reasonTypeRepository.save(body);
-            return { message: `Work type ${reasonType.type} created successfully` }
+            return { message: `Work type ${reasonType.type} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating reason type')
+            throw new BadRequestException('Error creating reason type');
         }
     }
 

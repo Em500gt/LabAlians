@@ -1,4 +1,4 @@
-import { Controller, FileTypeValidator, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipe, Post, StreamableFile, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Controller, Delete, FileTypeValidator, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipe, Post, StreamableFile, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { ProtocolFilesService } from "../services/protocolfiles.service";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -10,14 +10,11 @@ import { promisify } from 'util';
 export class ProtocolFilesController {
     constructor(private readonly protocolFilesService: ProtocolFilesService) { }
 
-    @Get(':id')
+    @Get(':protocolID')
     async getProtocolFile(
-        @Param('id', ValidateIdPipe) id: number,
+        @Param('protocolID', ValidateIdPipe) protocolID: number,
     ): Promise<StreamableFile> {
-        const file = await this.protocolFilesService.findProtocolFiles(id);
-        if (!file) {
-            throw new NotFoundException(`File with protocol ID ${id} not found`);
-        }
+        const file = await this.protocolFilesService.findProtocolFiles(protocolID);
         const gunzipAsync = promisify(gunzipCb);
         return new StreamableFile(await gunzipAsync(file.pdfData), {
             type: 'application/pdf',
@@ -27,12 +24,12 @@ export class ProtocolFilesController {
 
     @Post(':protocolID/upload')
     @UseInterceptors(FileInterceptor('file'))
-    async uploadFile(
+    async uploadProtocolFile(
         @Param('protocolID', ValidateIdPipe) protocolID: number,
         @UploadedFile(
             new ParseFilePipe({
                 validators: [new FileTypeValidator({ fileType: 'pdf' })]
-            })) file: Express.Multer.File) {
+            })) file: Express.Multer.File): Promise<{ message: string }> {
 
         const gzipAsync = promisify(gzipCb);
 
@@ -40,7 +37,11 @@ export class ProtocolFilesController {
             throw new HttpException('File upload failed!', HttpStatus.BAD_REQUEST);
         }
         const compressedPdfData = await gzipAsync(file.buffer)
-        const result = await this.protocolFilesService.createProtocolFiles(protocolID, file.originalname, compressedPdfData);
-        return { message: 'File uploaded successfully', result };
+        return await this.protocolFilesService.createProtocolFiles(protocolID, file.originalname, compressedPdfData);
+    }
+
+    @Delete(':protocolID/delete')
+    async deleteProtocolFile(@Param('protocolID', ValidateIdPipe) protocolID: number): Promise<{ message: string }> {
+        return this.protocolFilesService.deleteProtocolFile(protocolID);
     }
 }
