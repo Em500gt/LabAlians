@@ -3,7 +3,6 @@ import { ProtocolStatus } from "./protocol.status.entity";
 import { ProtocolFiles } from "./protocol.files.entity";
 import { WorkType } from "./work.type.entity";
 import { ReasonType } from "./reason.type.entity";
-// import { ReplaceJournal } from "../../journal/entities/replace.journal.entity";
 // import { IssueJournal } from "../../journal/entities/issue.journal.entity";
 import { Customers } from "../../customers/entities/customers.entity";
 import { Staff } from "../../staff/entities/staff.entity";

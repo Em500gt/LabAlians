@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Protocols } from "../entities/protocols.entity";
 import { Repository } from "typeorm";
-import { ProtocolCreateDto } from "../dto/protocol.dto";
+import { ProtocolCreateDto, ProtocolUpdateDto } from "../dto/protocol.dto";
 import { ReasonType } from "../entities/reason.type.entity";
 import { WorkType } from "../entities/work.type.entity";
 import { ProtocolStatus } from "../entities/protocol.status.entity";
@@ -65,13 +65,26 @@ export class ProtocolService {
         }
     }
 
-    // async updateProtocol(body: )
+    async updateProtocol(id: number, body: ProtocolUpdateDto) {
+        const protocolFind = await this.protocolsRepository.findOneBy({ id })
+        if (!protocolFind) {
+            throw new NotFoundException(`Protocol with ID ${id} not found`);
+        }
+        const [reasonTypeID, workTypeID, protocolStatusID, customerID] = await Promise.all([
+            this.checkReasonType(body.reasonTypeID),
+            this.checkWorkType(body.workTypeID),
+            this.checkProtocolStatus(body.protocolStatusID),
+            this.checkCustomer(body.customerID)
+        ]);
+        
+        return { message: `Protocol ${id} update successfully` }
+    }
 
     private async checkReasonType(id?: number): Promise<{ id: number } | undefined> {
         if (!id) {
             return;
         }
-        const result = await this.reasonTypeRepository.findOne({ where: { id } })
+        const result = await this.reasonTypeRepository.findOneBy({ id })
         if (!result) {
             throw new NotFoundException('Reason type not found');
         }
@@ -82,7 +95,7 @@ export class ProtocolService {
         if (!id) {
             return;
         }
-        const result = await this.workTypeRepository.findOne({ where: { id } })
+        const result = await this.workTypeRepository.findOneBy({ id })
         if (!result) {
             throw new NotFoundException('Work type not found');
         }
@@ -93,7 +106,7 @@ export class ProtocolService {
         if (!id) {
             return { id: 1 };
         }
-        const result = await this.protocolStatusRepository.findOne({ where: { id } })
+        const result = await this.protocolStatusRepository.findOneBy({ id })
         if (!result) {
             throw new NotFoundException('Protocol status not found');
         }

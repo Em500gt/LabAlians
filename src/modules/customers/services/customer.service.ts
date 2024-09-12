@@ -22,7 +22,7 @@ export class CustomerService {
     async createCustomer(body: CustomerCreateDto): Promise<{ message: string }> {
         try {
             const existingCustomer = await this.customersRepository.findOne({ where: { customerName: body.customerName } })
-            if(existingCustomer){
+            if (existingCustomer) {
                 throw new BadRequestException('Customer already exists');
             }
 

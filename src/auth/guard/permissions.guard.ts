@@ -12,20 +12,15 @@ export class PermissionsGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-
     if (!requiredPermissions) {
       return true;
     }
-
     const request = context.switchToHttp().getRequest();
     const staff = request.user;
-
     const hasPermission = requiredPermissions.every(permission => staff.staffGroup[permission]);
-
     if (!hasPermission) {
       throw new ForbiddenException('You do not have the required permissions');
     }
-
     return hasPermission;
   }
 }

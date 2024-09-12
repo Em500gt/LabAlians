@@ -11,6 +11,4 @@ export class ProtocolStatus {
 
     @OneToMany(() => Protocols, protocols => protocols.protocolStatusID)
     protocols: Protocols[];
-
-    /// Статус протокола (Действителен, не действителен)
 }

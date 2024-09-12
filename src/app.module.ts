@@ -4,8 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { StaffModule } from './modules/staff/staff.module';
 import { ProtocolsModule } from './modules/protocols/protocols.module';
 import { CustomersModule } from './modules/customers/customers.module';
-import { JournalModule } from './modules/journal/journal.module';
 import { AuthModule } from './auth/auth.module';
+import { JournalModule } from 'modules/journal/journal.module';
 
 @Module({
   imports: [

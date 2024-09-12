@@ -25,7 +25,6 @@ export class ProtocolFilesService {
     async createProtocolFiles(protocolID: number, filename: string, pdfData: Buffer): Promise<{ message: string }> {
         await this.checkProtocol(protocolID);
         await this.checkProtocolFile(protocolID);
-
         try {
             const protocolFile = await this.protocolFilesRepository.save({
                 filename,
@@ -40,7 +39,6 @@ export class ProtocolFilesService {
 
     async deleteProtocolFile(protocolID: number): Promise<{ message: string }> {
         await this.checkProtocol(protocolID);
-        
         const result = await this.protocolFilesRepository.delete({ protocolID: { id: protocolID } })
         if (result.affected === 0) {
             throw new NotFoundException(`File with protocol ID ${protocolID} not found`);

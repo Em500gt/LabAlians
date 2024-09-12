@@ -5,7 +5,6 @@ import { IStaff } from './types/types';
 import { ConfigService } from '@nestjs/config';
 const bcrypt = require('bcryptjs');
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -35,14 +34,13 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
       const payload = this.jwtService.verify(refreshToken);
-      const staffGroup = await this.staffService.findStaffGroup(payload.login)
+      const staffGroup = await this.staffService.findStaffGroup(payload.login);
       const newAccessToken = this.jwtService.sign(
         { id: payload.id, login: payload.login, staffGroup: staffGroup.staffGroup },
         { expiresIn: this.configService.getOrThrow('TIME_ACCESS_TOKEN') }
       );
 
-      return { accessToken: newAccessToken }
-
+      return { accessToken: newAccessToken };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }

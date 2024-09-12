@@ -28,7 +28,7 @@ import { APP_GUARD } from '@nestjs/core';
     JwtStrategy,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Устанавливаем JwtAuthGuard как глобальный Guard
+      useClass: JwtAuthGuard,
     },
   ]
 })

@@ -17,11 +17,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ]);
-
         if (isPublic) {
-            return true; // Пропускаем проверку JWT для публичных маршрутов
+            return true; 
         }
-
         return super.canActivate(context) as Promise<boolean>;
     }
 }

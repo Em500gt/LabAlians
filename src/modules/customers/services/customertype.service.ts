@@ -29,11 +29,11 @@ export class CustomerTypeService {
         }
     }
 
-    async deleteCustomerType(id: number): Promise<{message: string}>{
+    async deleteCustomerType(id: number): Promise<{ message: string }> {
         const customerTypeFind = await this.customersTypeRepository.delete(id)
-        if(customerTypeFind.affected === 0){
+        if (customerTypeFind.affected === 0) {
             throw new NotFoundException(`Customer type with ${id} not found`);
         }
-        return {message: `Customer type with ID ${id} succesfully deleted`}
+        return { message: `Customer type with ID ${id} succesfully deleted` }
     }
 }

@@ -1,5 +1,5 @@
 import { Accounts } from "./accounts.entity";
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class StaffGroups {
@@ -7,7 +7,7 @@ export class StaffGroups {
     id: number;
 
     @Column({ length: 50, unique: true })
-    staffGroup: string; // User, Admin, etc.
+    staffGroup: string; 
 
     @Column()
     canAddRecords: boolean;
@@ -23,5 +23,4 @@ export class StaffGroups {
 
     @OneToMany(() => Accounts, accounts => accounts.staffGroup)
     accounts: Accounts[];
-
 }

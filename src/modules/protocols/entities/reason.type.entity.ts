@@ -11,6 +11,4 @@ export class ReasonType {
 
     @OneToMany(() => Protocols, protocols => protocols.reasonTypeID)
     protocols: Protocols[];
-
-    /// Основание по которому протокол делается 
 }

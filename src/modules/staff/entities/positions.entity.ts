@@ -7,7 +7,7 @@ export class Positions {
     id: number;
 
     @Column({ unique: true })
-    position: string; // Начальник лаборатории, Мастер, Инженер 1 кат., Инженер 2 кат., Инженер.
+    position: string;
 
     @OneToMany(() => Staff, staff => staff.positionID, { onDelete: 'CASCADE' })
     staff: Staff[];
