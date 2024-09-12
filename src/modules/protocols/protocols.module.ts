@@ -11,10 +11,14 @@ import { WorkTypeService } from './services/worktype.service';
 import { ReasonTypeService } from './services/reasontype.service';
 import { ProtocolFilesController } from './controllers/protocolfiles.controller';
 import { ProtocolFilesService } from './services/protocolfiles.service';
+import { ProtocolController } from './controllers/protocol.controller';
+import { ProtocolService } from './services/protocol.service';
+import { ProtocolStatusController } from './controllers/protocolstatus.controller';
+import { ProtocolStatusService } from './services/protocolstatus.services';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Protocols, ProtocolFiles, ProtocolStatus, ReasonType, WorkType])],
-    controllers: [WorkTypeController, ReasonTypeController, ProtocolFilesController],
-    providers: [WorkTypeService, ReasonTypeService, ProtocolFilesService]
+    controllers: [WorkTypeController, ReasonTypeController, ProtocolFilesController, ProtocolController, ProtocolStatusController],
+    providers: [WorkTypeService, ReasonTypeService, ProtocolFilesService, ProtocolService, ProtocolStatusService]
 })
 export class ProtocolsModule { }

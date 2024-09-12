@@ -19,9 +19,24 @@ export class ProtocolService {
         }
     }
 
-    async createProtocol(body: ProtocolCreateDto): Promise<{ message: string }> {
+    async createProtocol(): Promise<{ message: string }> {
         try {
-            const protocol = await this.protocolsRepository.save(body);
+            const protocol = await this.protocolsRepository.save({
+                isAccreditation: true,
+                creationDate: new Date(),
+                workDate: "Test",
+                workObject: "Test",
+                copies: 1,
+                workSheetNum: 1,
+                isLssied: 1,
+                note: "test",
+                // reasonTypeID: 1, /// !!!!!!!!!!!
+                // workTypeID: 1, /// !!!!!!!!!!!
+                // protocolStatusID: 1, /// !!!!!!!!!!!
+                // customerID: 1, /// !!!!!!!!!!!
+                // staffID: 1, /// !!!!!!!!!!!
+                // protocolfile: 1
+            });
             return { message: `Protocol ${protocol.id} created successfully` };
         } catch (error) {
             throw new BadRequestException(`Error creating protocol`);

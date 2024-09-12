@@ -23,10 +23,9 @@ export class ProtocolFilesService {
     }
 
     async createProtocolFiles(protocolID: number, filename: string, pdfData: Buffer): Promise<{ message: string }> {
-        const protocol = await this.protocolsRepository.findOne({ where: { id: protocolID } })
-        if (!protocol) {
-            throw new NotFoundException(`Protocol with ID ${protocolID} not found`);
-        }
+        await this.checkProtocol(protocolID);
+        await this.checkProtocolFile(protocolID);
+
         try {
             const protocolFile = await this.protocolFilesRepository.save({
                 filename,
@@ -40,14 +39,26 @@ export class ProtocolFilesService {
     }
 
     async deleteProtocolFile(protocolID: number): Promise<{ message: string }> {
-        const file = await this.protocolFilesRepository.findOne({ where: { protocolID: { id: protocolID } } })
-        if (!file) {
-            throw new NotFoundException(`Protocol with ID ${protocolID} not found`)
-        }
-        const result = await this.protocolFilesRepository.delete(file.id)
+        await this.checkProtocol(protocolID);
+        
+        const result = await this.protocolFilesRepository.delete({ protocolID: { id: protocolID } })
         if (result.affected === 0) {
-            throw new NotFoundException(`File with ID ${file.id} not found`);
+            throw new NotFoundException(`File with protocol ID ${protocolID} not found`);
         }
-        return { message: `File with ID ${file.id} successfully deleted` };
+        return { message: `File with protocol ID ${protocolID} successfully deleted` };
+    }
+
+    private async checkProtocol(id: number): Promise<any> {
+        const protocol = await this.protocolsRepository.findOne({ where: { id: id } })
+        if (!protocol) {
+            throw new NotFoundException(`Protocol with ID ${id} not found`);
+        }
+    }
+
+    private async checkProtocolFile(id: number): Promise<any> {
+        const protocolFile = await this.protocolFilesRepository.findOne({ where: { protocolID: { id } } })
+        if (protocolFile) {
+            throw new NotFoundException(`File with protocol ID ${id} already exists`);
+        }
     }
 }

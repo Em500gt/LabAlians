@@ -13,7 +13,7 @@ export class Protocols {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ type: 'boolean' }) 
     isAccreditation: boolean;
 
     @Column()
