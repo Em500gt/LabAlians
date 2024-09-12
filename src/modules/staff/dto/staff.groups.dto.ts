@@ -1,4 +1,5 @@
 import { IsString, IsBoolean, IsOptional, Length, IsNotEmpty } from 'class-validator';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 
 export class StaffGroupsDto {
     @IsNotEmpty({ message: 'User group is required' })
@@ -22,3 +23,5 @@ export class StaffGroupsDto {
     @IsBoolean()
     canAccessFiles: boolean;
 }
+
+export class UpdateStaffGroupsDto extends OmitType(PartialType(StaffGroupsDto), ['staffGroup'] as const) {}

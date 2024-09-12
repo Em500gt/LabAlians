@@ -15,9 +15,13 @@ import { ProtocolController } from './controllers/protocol.controller';
 import { ProtocolService } from './services/protocol.service';
 import { ProtocolStatusController } from './controllers/protocolstatus.controller';
 import { ProtocolStatusService } from './services/protocolstatus.services';
+import { CustomersModule } from 'modules/customers/customers.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Protocols, ProtocolFiles, ProtocolStatus, ReasonType, WorkType])],
+    imports: [
+        TypeOrmModule.forFeature([Protocols, ProtocolFiles, ProtocolStatus, ReasonType, WorkType]),
+        CustomersModule
+    ],
     controllers: [WorkTypeController, ReasonTypeController, ProtocolFilesController, ProtocolController, ProtocolStatusController],
     providers: [WorkTypeService, ReasonTypeService, ProtocolFilesService, ProtocolService, ProtocolStatusService]
 })

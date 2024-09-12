@@ -163,22 +163,22 @@ export class StaffService {
         }
     }
 
-    private async validatePositionExists(positionID: number): Promise<void> {
-        const position = await this.positionsRepository.findOne({ where: { id: positionID } });
+    private async validatePositionExists(id: number): Promise<void> {
+        const position = await this.positionsRepository.findOne({ where: { id } });
         if (!position) {
             throw new NotFoundException('Position not found');
         }
     }
 
-    private async validateDivisionExists(divisionID: number): Promise<void> {
-        const division = await this.divisionsRepository.findOne({ where: { id: divisionID } });
+    private async validateDivisionExists(id: number): Promise<void> {
+        const division = await this.divisionsRepository.findOne({ where: { id } });
         if (!division) {
             throw new NotFoundException('Division not found');
         }
     }
 
-    private async validateStaffGroupExists(staffGroupID: number): Promise<void> {
-        const staffGroup = await this.staffGroupsRepository.findOne({ where: { id: staffGroupID } });
+    private async validateStaffGroupExists(id: number): Promise<void> {
+        const staffGroup = await this.staffGroupsRepository.findOne({ where: { id } });
         if (!staffGroup) {
             throw new NotFoundException('Staff group not found');
         }

@@ -2,8 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/commo
 import { StaffGroupsService } from "../services/staffgroups.service";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
-import { UpdateStaffGroupsDto } from "../dto/staff.groups.update.dto";
-import { StaffGroupsDto } from "../dto/staff.groups.dto";
+import { StaffGroupsDto, UpdateStaffGroupsDto } from "../dto/staff.groups.dto";
 
 @Controller('staffgroups')
 export class StaffGroupsController {

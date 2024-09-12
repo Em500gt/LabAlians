@@ -3,9 +3,8 @@ import { PermissionsGuard } from "auth/guard/permissions.guard";
 import { CheckPermissions } from "common/decorators/check-permissions.decorator";
 import { Customers } from "../entities/customers.entity";
 import { CustomerService } from "../services/customer.service";
-import { CustomerCreateDto } from "../dto/customer.create.dto";
+import { CustomerCreateDto, CustomerUpdateDto } from "../dto/customer.create.dto";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
-import { CustomerUpdateDto } from "../dto/customer.update.dto";
 
 @Controller('customer')
 @UseGuards(PermissionsGuard)

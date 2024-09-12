@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength, Max } from "class-validator";
+import { PartialType } from '@nestjs/mapped-types';
 
 export class StaffCreateDto {
     @IsNotEmpty({ message: 'firstname is required' })
@@ -29,3 +30,5 @@ export class StaffCreateDto {
     @Min(1, { message: 'divisionID must be at least 1' })
     readonly divisionID: number;
 }
+
+export class StaffUpdateDto extends PartialType(StaffCreateDto) {}

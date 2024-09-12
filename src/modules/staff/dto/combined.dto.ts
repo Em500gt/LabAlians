@@ -1,8 +1,6 @@
-import { AccountCreateDto } from "./account.create.dto";
-import { StaffCreateDto } from "./staff.create.dto";
+import { AccountCreateDto, AccountUpdateDto } from "./account.dto";
+import { StaffCreateDto, StaffUpdateDto } from "./staff.dto";
 import { IntersectionType } from '@nestjs/mapped-types';
-import { StaffUpdateDto } from "./staff.update.dto";
-import { AccountUpdateDto } from "./account.update.dto";
 
 export class CombinedDto extends IntersectionType(
     StaffCreateDto,

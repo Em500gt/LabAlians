@@ -2,8 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { InjectRepository } from "@nestjs/typeorm";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { Repository } from "typeorm";
-import { StaffGroupsDto } from "../dto/staff.groups.dto";
-import { UpdateStaffGroupsDto } from "../dto/staff.groups.update.dto";
+import { StaffGroupsDto, UpdateStaffGroupsDto } from "../dto/staff.groups.dto";
 
 @Injectable()
 export class StaffGroupsService {

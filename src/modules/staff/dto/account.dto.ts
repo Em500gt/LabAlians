@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, Matches, MaxLength, Min, MinLength } from "class-validator";
+import { PartialType, OmitType } from '@nestjs/mapped-types';
 
 export class AccountCreateDto {
     @IsString()
@@ -21,3 +22,5 @@ export class AccountCreateDto {
     @Min(1, {message: "staffGroupID must be at least 1 "})
     readonly staffGroupID: number;
 }
+
+export class AccountUpdateDto extends OmitType(PartialType(AccountCreateDto), ['login', 'password'] as const) {}

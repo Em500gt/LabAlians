@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Max, Min } from 'class-validator';
+import { PartialType, OmitType } from '@nestjs/mapped-types';
 
 export class CustomerCreateDto {
     @IsNotEmpty({ message: 'Customer name is required' })
@@ -65,3 +66,5 @@ export class CustomerCreateDto {
     @IsNumber({}, { message: 'Customer type ID must be an integer' })
     customerTypeID: number;
 }
+
+export class CustomerUpdateDto extends PartialType(CustomerCreateDto) {}

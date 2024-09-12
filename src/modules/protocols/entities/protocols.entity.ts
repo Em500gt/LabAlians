@@ -13,28 +13,28 @@ export class Protocols {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'boolean' }) 
+    @Column({ type: 'boolean', default: false }) 
     isAccreditation: boolean;
 
     @Column()
     creationDate: Date;
 
     @Column()
-    workDate: string;
+    workDate: Date;
 
     @Column()
     workObject: string;
 
-    @Column()
+    @Column({ default: 1 })
     copies: number;
 
-    @Column()
+    @Column({ nullable: true })
     workSheetNum: number;
 
-    @Column()
-    isLssied: number;
+    @Column({ default: false })
+    isLssied: boolean;
 
-    @Column()
+    @Column({ nullable: true, default: undefined })
     note: string;
 
     @ManyToOne(() => ReasonType, reasontype => reasontype.protocols, { nullable: true })
@@ -51,14 +51,6 @@ export class Protocols {
     @ManyToOne(() => ProtocolStatus, protocolstatus => protocolstatus.protocols, { nullable: true })
     @JoinColumn({ name: "protocolStatusID" })
     protocolStatusID: ProtocolStatus;
-
-    // @ManyToOne(() => ReplaceJournal, replacejournal => replacejournal.protocols)
-    // @JoinColumn({ name: "replaceJournalID" })
-    // replacejournal: ReplaceJournal;
-
-    // @ManyToOne(() => IssueJournal, issuejournal => issuejournal.protocols)
-    // @JoinColumn({ name: "issueJournalID" })
-    // issuejournal: IssueJournal;
 
     @ManyToOne(() => Customers, customers => customers.protocols, { nullable: true })
     @JoinColumn({ name: "customerID" })

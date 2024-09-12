@@ -8,7 +8,7 @@ export class ProtocolFileDto {
     @MaxLength(50, { message: 'Filename must not exceed 50 characters' })
     filename: string;
 
-    @IsNotEmpty({ message: 'pdfData is required' }) ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    @IsNotEmpty({ message: 'pdfData is required' })
     pdfData: Buffer;
 
     @IsNotEmpty({ message: 'Protocol ID is required' })
