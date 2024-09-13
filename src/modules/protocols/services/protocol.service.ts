@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Protocols } from "../entities/protocols.entity";
-import { Repository } from "typeorm";
+import { EntityManager, Repository } from "typeorm";
 import { ProtocolCreateDto, ProtocolUpdateDto } from "../dto/protocol.dto";
 import { ReasonType } from "../entities/reason.type.entity";
 import { WorkType } from "../entities/work.type.entity";
 import { ProtocolStatus } from "../entities/protocol.status.entity";
 import { Customers } from "modules/customers/entities/customers.entity";
+import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
+import { IssueJournalDto } from "modules/journal/dto/issue.journal.dto";
 
 @Injectable()
 export class ProtocolService {
@@ -27,9 +29,14 @@ export class ProtocolService {
         private readonly customersRepository: Repository<Customers>
     ) { }
 
-    async getProtocols(): Promise<Protocols[]> {
+    async getProtocols(year?: number): Promise<Protocols[]> {
         try {
-            return this.protocolsRepository.find();
+            const query = this.protocolsRepository.createQueryBuilder('protocols').leftJoinAndSelect('protocols.staffID', 'staff');
+            if (year) {
+                query.where('EXTRACT(YEAR FROM protocols.creationDate) = :year', { year });
+            }
+            query.orderBy('protocols.creationDate', 'DESC');
+            return await query.getMany();
         } catch (error) {
             throw new InternalServerErrorException('Failed to retrieve protocols from database');
         }
@@ -42,6 +49,7 @@ export class ProtocolService {
             this.checkProtocolStatus(body.protocolStatusID),
             this.checkCustomer(body.customerID)
         ]);
+
         const protocolData = {
             isAccreditation: body.isAccreditation ?? false,
             creationDate: new Date(),
@@ -56,6 +64,7 @@ export class ProtocolService {
             customerID: customerID,
             staffID: { id }
         }
+
         try {
             const protocol = await this.protocolsRepository.save(protocolData);
             return { message: `Protocol ${protocol.id} created successfully` };
@@ -66,18 +75,65 @@ export class ProtocolService {
     }
 
     async updateProtocol(id: number, body: ProtocolUpdateDto) {
-        const protocolFind = await this.protocolsRepository.findOneBy({ id })
-        if (!protocolFind) {
+        const protocol = await this.protocolsRepository.findOneBy({ id })
+        if (!protocol) {
             throw new NotFoundException(`Protocol with ID ${id} not found`);
         }
         const [reasonTypeID, workTypeID, protocolStatusID, customerID] = await Promise.all([
-            this.checkReasonType(body.reasonTypeID),
-            this.checkWorkType(body.workTypeID),
-            this.checkProtocolStatus(body.protocolStatusID),
-            this.checkCustomer(body.customerID)
+            body.reasonTypeID ? this.checkReasonType(body.reasonTypeID) : protocol.reasonTypeID,
+            body.workTypeID ? this.checkWorkType(body.workTypeID) : protocol.workTypeID,
+            body.protocolStatusID ? this.checkProtocolStatus(body.protocolStatusID) : protocol.protocolStatusID,
+            body.customerID ? this.checkCustomer(body.customerID) : protocol.customerID
         ]);
-        
-        return { message: `Protocol ${id} update successfully` }
+        const updatedProtocolData = {
+            ...protocol,
+            isAccreditation: body.isAccreditation ?? protocol.isAccreditation,
+            workDate: body.workDate ? new Date(body.workDate) : protocol.workDate,
+            workObject: body.workObject ?? protocol.workObject,
+            copies: body.copies ?? protocol.copies,
+            workSheetNum: body.workSheetNum ?? protocol.workSheetNum,
+            note: body.note ?? protocol.note,
+            reasonTypeID: reasonTypeID,
+            workTypeID: workTypeID,
+            protocolStatusID: protocolStatusID,
+            customerID: customerID,
+        };
+        try {
+            await this.protocolsRepository.save(updatedProtocolData);
+            return { message: `Protocol ${id} updated successfully` };
+        } catch (error) {
+            throw new BadRequestException(`Error updating protocol`);
+        }
+    }
+
+    async issueProtocol(id: number, body: IssueJournalDto): Promise<{ message: string }> {
+        return await this.protocolsRepository.manager.transaction(async (transactionalEntityManager: EntityManager) => {
+            try {
+                const protocol = await transactionalEntityManager.findOne(Protocols, {
+                    where: { id },
+                    relations: ['reasonTypeID', 'workTypeID', 'protocolStatusID', 'customerID']
+                })
+                if (!protocol) {
+                    throw new NotFoundException(`Protocol with ID ${id} not found`);
+                }
+                if (protocol.isLssied) {
+                    throw new BadRequestException(`The protocol has already been issued to the customer`)
+                }
+                await this.checkIssueProtocol(protocol);
+                await transactionalEntityManager.update(Protocols, { id }, { isLssied: true });
+                await transactionalEntityManager.save(IssueJournal, {
+                    date: new Date(),
+                    issueMethodID: { id: body.issueMethodID },
+                    protocolID: { id: protocol.id }
+                })
+                return { message: `The protocol was successfully issued to the customer` };
+            } catch (error) {
+                if (error instanceof BadRequestException || error instanceof NotFoundException) {
+                    throw error
+                }
+                throw new InternalServerErrorException('An error occurred while processing the transaction.', error.message);
+            }
+        })
     }
 
     private async checkReasonType(id?: number): Promise<{ id: number } | undefined> {
@@ -122,5 +178,24 @@ export class ProtocolService {
             throw new NotFoundException('Customers not found');
         }
         return { id: result.id };
+    }
+
+    private async checkIssueProtocol(protocol: Protocols): Promise<void> {
+        const requiredFields: { field: keyof Protocols, errorMessage: string }[] = [
+            { field: 'workDate', errorMessage: 'Work date is missing in the protocol' },
+            { field: 'workObject', errorMessage: 'Work object is missing in the protocol' },
+            { field: 'copies', errorMessage: 'Copies is missing in the protocol' },
+            { field: 'workSheetNum', errorMessage: 'Work sheet is missing in the protocol' },
+            { field: 'reasonTypeID', errorMessage: 'Reason Type is missing in the protocol' },
+            { field: 'workTypeID', errorMessage: 'Work Type is missing in the protocol' },
+            { field: 'protocolStatusID', errorMessage: 'Protocol Status is missing in the protocol' },
+            { field: 'customerID', errorMessage: 'Customer is missing in the protocol' },
+        ];
+
+        for (const { field, errorMessage } of requiredFields) {
+            if (!protocol[field]) {
+                throw new BadRequestException(errorMessage);
+            }
+        }
     }
 }

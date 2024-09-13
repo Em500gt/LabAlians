@@ -1,5 +1,5 @@
 export interface IStaff {
-    id: string;
+    id: number;
     login: string;
     password: string;
     staffGroup: Object;

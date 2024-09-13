@@ -1,10 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { StaffGroupsService } from "../services/staffgroups.service";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { StaffGroupsDto, UpdateStaffGroupsDto } from "../dto/staff.groups.dto";
+import { CheckPermissions } from "common/decorators/check-permissions.decorator";
+import { PermissionsGuard } from "auth/guard/permissions.guard";
 
 @Controller('staffgroups')
+@UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class StaffGroupsController {
     constructor(private staffGroupsService: StaffGroupsService) { }
 

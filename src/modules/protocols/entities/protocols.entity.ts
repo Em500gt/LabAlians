@@ -3,16 +3,16 @@ import { ProtocolStatus } from "./protocol.status.entity";
 import { ProtocolFiles } from "./protocol.files.entity";
 import { WorkType } from "./work.type.entity";
 import { ReasonType } from "./reason.type.entity";
-// import { IssueJournal } from "../../journal/entities/issue.journal.entity";
 import { Customers } from "../../customers/entities/customers.entity";
 import { Staff } from "../../staff/entities/staff.entity";
+import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
 
 @Entity()
 export class Protocols {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'boolean', default: false }) 
+    @Column({ type: 'boolean', default: false })
     isAccreditation: boolean;
 
     @Column()
@@ -45,7 +45,7 @@ export class Protocols {
     workTypeID: WorkType;
 
     @OneToOne(() => ProtocolFiles, protocolfile => protocolfile.protocolID, { nullable: true })
-    protocolfile: ProtocolFiles[];
+    protocolfile: ProtocolFiles;
 
     @ManyToOne(() => ProtocolStatus, protocolstatus => protocolstatus.protocols, { nullable: true })
     @JoinColumn({ name: "protocolStatusID" })
@@ -58,4 +58,7 @@ export class Protocols {
     @ManyToOne(() => Staff, staff => staff.protocols)
     @JoinColumn({ name: "staffID" })
     staffID: Staff;
+
+    @OneToOne(() => IssueJournal, issueJournal => issueJournal.protocolID)
+    issueJournalID: IssueJournal;
 }

@@ -10,6 +10,9 @@ export class StaffGroups {
     staffGroup: string; 
 
     @Column()
+    canViewRecords: boolean;
+
+    @Column()
     canAddRecords: boolean;
 
     @Column()
@@ -20,6 +23,9 @@ export class StaffGroups {
 
     @Column()
     canAccessFiles: boolean;
+
+    @Column()
+    fullAccess: boolean;
 
     @OneToMany(() => Accounts, accounts => accounts.staffGroup)
     accounts: Accounts[];

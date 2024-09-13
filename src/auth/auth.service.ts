@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { StaffService } from 'modules/staff/services/staff.service';
 import { JwtService } from '@nestjs/jwt';
 import { IStaff } from './types/types';
 import { ConfigService } from '@nestjs/config';
+import { ChangePasswordDto } from './types/passwordDTO';
 const bcrypt = require('bcryptjs');
 
 @Injectable()
@@ -15,12 +16,14 @@ export class AuthService {
 
   async validateStaff(login: string, password: string): Promise<IStaff | null> {
     const staff = await this.staffService.findOne(login);
-
-    const passwordIsMatch = await bcrypt.compare(password, staff.password)
-    if (staff && passwordIsMatch) {
-      return staff;
+    if (!staff) {
+      throw new UnauthorizedException('Login or password are incorrect!');
     }
-    throw new UnauthorizedException('Login or password are incorrect!');
+    const passwordIsMatch = await bcrypt.compare(password, staff.password);
+    if (!passwordIsMatch) {
+      throw new UnauthorizedException('Login or password are incorrect!');
+    }
+    return staff;
   }
 
   async login(staff: IStaff): Promise<{ accessToken: string, refreshToken: string }> {
@@ -44,5 +47,17 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  async changePassword(id: number, login: string, updatePasswordStaff: ChangePasswordDto): Promise<{ message: string }> {
+    const staff = await this.staffService.findOne(login);
+    if (!staff) {
+      throw new NotFoundException('Staff not found');
+    }
+    const passwordIsMatch = await bcrypt.compare(updatePasswordStaff.password, staff.password);
+    if (!passwordIsMatch) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+    return await this.staffService.updatePassword(id, updatePasswordStaff.newPassword);
   }
 }

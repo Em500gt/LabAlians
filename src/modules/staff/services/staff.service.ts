@@ -142,11 +142,18 @@ export class StaffService {
     }
 
     async deleteStaff(id: number): Promise<{ message: string }> {
-        const result = await this.staffRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Staff with ID ${id} not found`);
+        try {
+            const result = await this.staffRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Staff with ID ${id} not found`);
+            }
+            return { message: `Staff with ID ${id} succesfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') { 
+                throw new BadRequestException(`Cannot delete staff with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting staff: ${error.message}`);
         }
-        return { message: `Staff with ID ${id} succesfully deleted` };
     }
 
     private async validateUniqueLogin(login: string): Promise<void> {
@@ -213,5 +220,19 @@ export class StaffService {
                 }
             }
         })
+    }
+
+    async updatePassword(id: number, newPassword: string): Promise<{ message: string }> {
+        try {
+            const saltRounds = this.getSaltRounds();
+            const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+            const result = await this.accountRepository.update({ id }, { password: hashedPassword });
+            if (result.affected === 0) {
+                throw new NotFoundException('Staff account not found');
+            }
+            return { message: 'Password updated successfully' }
+        } catch (error) {
+            throw new InternalServerErrorException('An error occurred while updating the password');
+        }
     }
 }

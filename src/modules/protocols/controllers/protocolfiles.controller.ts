@@ -1,21 +1,27 @@
-import { Controller, Delete, FileTypeValidator, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipe, Post, StreamableFile, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Controller, Delete, FileTypeValidator, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipe, Post, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ProtocolFilesService } from "../services/protocolfiles.service";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { gzip as gzipCb, gunzip as gunzipCb } from 'zlib';
 import { promisify } from 'util';
+import { CheckPermissions } from "common/decorators/check-permissions.decorator";
+import { PermissionsGuard } from "auth/guard/permissions.guard";
 
 
 @Controller('protocolfiles')
+@UseGuards(PermissionsGuard)
 export class ProtocolFilesController {
     constructor(private readonly protocolFilesService: ProtocolFilesService) { }
 
     @Get(':protocolID')
+    @CheckPermissions('canViewRecords', 'canAccessFiles')
     async getProtocolFile(
         @Param('protocolID', ValidateIdPipe) protocolID: number,
     ): Promise<StreamableFile> {
         const file = await this.protocolFilesService.findProtocolFiles(protocolID);
         const gunzipAsync = promisify(gunzipCb);
+        console.log(gunzipAsync);
+        
         return new StreamableFile(await gunzipAsync(file.pdfData), {
             type: 'application/pdf',
             disposition: `attachment; filename="${file.filename}"`,
@@ -23,6 +29,7 @@ export class ProtocolFilesController {
     }
 
     @Post(':protocolID/upload')
+    @CheckPermissions('canAddRecords', 'canAccessFiles')
     @UseInterceptors(FileInterceptor('file'))
     async uploadProtocolFile(
         @Param('protocolID', ValidateIdPipe) protocolID: number,
@@ -41,6 +48,7 @@ export class ProtocolFilesController {
     }
 
     @Delete(':protocolID/delete')
+    @CheckPermissions('canDeleteRecords', 'canAccessFiles')
     async deleteProtocolFile(@Param('protocolID', ValidateIdPipe) protocolID: number): Promise<{ message: string }> {
         return this.protocolFilesService.deleteProtocolFile(protocolID);
     }
