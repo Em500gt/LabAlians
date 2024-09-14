@@ -5,7 +5,7 @@ import { WorkType } from "./work.type.entity";
 import { ReasonType } from "./reason.type.entity";
 import { Customers } from "../../customers/entities/customers.entity";
 import { Staff } from "../../staff/entities/staff.entity";
-import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
+import { IssueJournal } from "../../journal/entities/issue.journal.entity";
 
 @Entity()
 export class Protocols {

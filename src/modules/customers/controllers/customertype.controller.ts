@@ -8,6 +8,7 @@ import { CheckPermissions } from "common/decorators/check-permissions.decorator"
 
 @Controller('customertype')
 @UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class CustomerTypeController {
     constructor(private customerTypeService: CustomerTypeService) { }
 
@@ -18,13 +19,11 @@ export class CustomerTypeController {
     }
 
     @Post()
-    @CheckPermissions('fullAccess')
     async createCustomerType(@Body() body: CustomerTypeDto): Promise<{ message: string }> {
         return await this.customerTypeService.createCustomerType(body);
     }
 
     @Delete(':id')
-    @CheckPermissions('fullAccess')
     async deleteCustomerType(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.customerTypeService.deleteCustomerType(id);
     }

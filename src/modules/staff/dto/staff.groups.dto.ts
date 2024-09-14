@@ -7,6 +7,10 @@ export class StaffGroupsDto {
     @Length(1, 50)
     staffGroup: string;
 
+    @IsNotEmpty({ message: 'canViewRecords is required' })
+    @IsBoolean()
+    canViewRecords: boolean;
+
     @IsNotEmpty({ message: 'canAddRecords is required' })
     @IsBoolean()
     canAddRecords: boolean;
@@ -22,6 +26,10 @@ export class StaffGroupsDto {
     @IsNotEmpty({ message: 'canAccessFiles is required' })
     @IsBoolean()
     canAccessFiles: boolean;
+
+    @IsNotEmpty({ message: 'fullAccess is required' })
+    @IsBoolean()
+    fullAccess: boolean;
 }
 
 export class UpdateStaffGroupsDto extends OmitType(PartialType(StaffGroupsDto), ['staffGroup'] as const) {}

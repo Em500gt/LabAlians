@@ -9,6 +9,8 @@ import { ProtocolStatus } from "../entities/protocol.status.entity";
 import { Customers } from "modules/customers/entities/customers.entity";
 import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
 import { IssueJournalDto } from "modules/journal/dto/issue.journal.dto";
+import { IssueMethod } from "modules/journal/entities/issue.method.entity";
+import { ProtocolFiles } from "../entities/protocol.files.entity";
 
 @Injectable()
 export class ProtocolService {
@@ -113,17 +115,27 @@ export class ProtocolService {
                     where: { id },
                     relations: ['reasonTypeID', 'workTypeID', 'protocolStatusID', 'customerID']
                 })
+
                 if (!protocol) {
                     throw new NotFoundException(`Protocol with ID ${id} not found`);
                 }
                 if (protocol.isLssied) {
                     throw new BadRequestException(`The protocol has already been issued to the customer`)
                 }
+                const findProtocolFile = await transactionalEntityManager.findOne(ProtocolFiles, { where: { protocolID: { id } } })     
+                if (!findProtocolFile) {
+                    throw new BadRequestException(`Protocol file absent in protocol`)
+                }
+                const issueMethod = await transactionalEntityManager.findOne(IssueMethod, { where: { id: body.issueMethodID } })
+                if (!issueMethod) {
+                    throw new NotFoundException('Issue method not found');
+                }
+
                 await this.checkIssueProtocol(protocol);
                 await transactionalEntityManager.update(Protocols, { id }, { isLssied: true });
                 await transactionalEntityManager.save(IssueJournal, {
                     date: new Date(),
-                    issueMethodID: { id: body.issueMethodID },
+                    issueMethodID: { id: issueMethod.id },
                     protocolID: { id: protocol.id }
                 })
                 return { message: `The protocol was successfully issued to the customer` };

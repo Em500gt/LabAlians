@@ -33,6 +33,7 @@ export class ProtocolController {
     }
 
     @Post(':id/issue')
+    @CheckPermissions('canAddRecords')
     async issueProtocol(@Param('id', ValidateIdPipe) id: number, @Body() body: IssueJournalDto): Promise<{ message: string }> {
         return await this.protocolService.issueProtocol(id, body);
     }

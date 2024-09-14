@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CustomerTypes } from "../entities/customer.type.entity";
@@ -30,10 +30,17 @@ export class CustomerTypeService {
     }
 
     async deleteCustomerType(id: number): Promise<{ message: string }> {
-        const customerTypeFind = await this.customersTypeRepository.delete(id)
-        if (customerTypeFind.affected === 0) {
-            throw new NotFoundException(`Customer type with ${id} not found`);
+        try {
+            const customerTypeFind = await this.customersTypeRepository.delete(id)
+            if (customerTypeFind.affected === 0) {
+                throw new NotFoundException(`Customer type with ${id} not found`);
+            }
+            return { message: `Customer type with ID ${id} succesfully deleted` }
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete customer type with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting customer type: ${error.message}`);
         }
-        return { message: `Customer type with ID ${id} succesfully deleted` }
     }
 }

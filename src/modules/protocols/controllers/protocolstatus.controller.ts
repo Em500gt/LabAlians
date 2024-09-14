@@ -8,6 +8,7 @@ import { CheckPermissions } from "common/decorators/check-permissions.decorator"
 
 @Controller('protocolstatus')
 @UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class ProtocolStatusController {
     constructor(private protocolStatusService: ProtocolStatusService) { }
 
@@ -18,13 +19,11 @@ export class ProtocolStatusController {
     }
 
     @Post()
-    @CheckPermissions('fullAccess')
     async createProtocolStatus(@Body() body: ProtocolStatusDto): Promise<{ message: string }> {
         return await this.protocolStatusService.createProtocolStatus(body);
     }
 
     @Delete(':id')
-    @CheckPermissions('fullAccess')
     async deleteProtocolStatus(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.protocolStatusService.deleteProtocolStatus(id);
     }

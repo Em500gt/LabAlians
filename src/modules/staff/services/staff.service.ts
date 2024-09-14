@@ -149,7 +149,7 @@ export class StaffService {
             }
             return { message: `Staff with ID ${id} succesfully deleted` };
         } catch (error) {
-            if (error.code === '23503') { 
+            if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete staff with ID ${id}, as it is still referenced by other entities`);
             }
             throw new InternalServerErrorException(`Error deleting staff: ${error.message}`);
@@ -213,10 +213,12 @@ export class StaffService {
             relations: ['staffGroup'],
             select: {
                 staffGroup: {
+                    canViewRecords: true,
                     canAddRecords: true,
                     canEditRecords: true,
                     canDeleteRecords: true,
-                    canAccessFiles: true
+                    canAccessFiles: true,
+                    fullAccess: true
                 }
             }
         })

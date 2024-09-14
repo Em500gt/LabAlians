@@ -4,7 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { IssueMethod } from './entities/issue.method.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([IssueJournal, IssueMethod])]
+    imports: [TypeOrmModule.forFeature([IssueJournal, IssueMethod])],
+    controllers: [],
+    providers: []
 })
 
 export class JournalModule { }

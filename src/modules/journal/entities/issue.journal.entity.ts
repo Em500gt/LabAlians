@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { IssueMethod } from "./issue.method.entity";
-import { Protocols } from "modules/protocols/entities/protocols.entity";
+import { Protocols } from "../../protocols/entities/protocols.entity";
 
 @Entity()
 export class IssueJournal {
@@ -10,10 +10,11 @@ export class IssueJournal {
     @Column()
     date: Date;
 
-    @OneToOne(() => IssueMethod, issuemethod => issuemethod.issuejournalID)
+    @ManyToOne(() => IssueMethod, issuemethod => issuemethod.issuejournalID)
     @JoinColumn({ name: "issueMethodID" })
     issueMethodID: IssueMethod;
 
     @OneToOne(() => Protocols, protocols => protocols.issueJournalID)
+    @JoinColumn({ name: "protocolID" })
     protocolID: Protocols;
 }

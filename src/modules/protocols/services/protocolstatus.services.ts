@@ -33,10 +33,17 @@ export class ProtocolStatusService {
     }
 
     async deleteProtocolStatus(id: number): Promise<{ message: string }> {
-        const result = await this.protocolStatusRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Protocol status with ID ${id} not found`);
+        try {
+            const result = await this.protocolStatusRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Protocol status with ID ${id} not found`);
+            }
+            return { message: `Protocol status with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete protocol status with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting protocol status: ${error.message}`);
         }
-        return { message: `Protocol status with ID ${id} successfully deleted` };
     }
 }

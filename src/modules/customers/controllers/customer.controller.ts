@@ -7,6 +7,7 @@ import { CustomerCreateDto, CustomerUpdateDto } from "../dto/customer.create.dto
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
 
 @Controller('customer')
+@CheckPermissions('fullAccess')
 @UseGuards(PermissionsGuard)
 export class CustomerController {
     constructor(private customerService: CustomerService) { }
@@ -30,7 +31,6 @@ export class CustomerController {
     }
 
     @Delete(':id')
-    @CheckPermissions('canDeleteRecords')
     async deleteCustomer(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.customerService.deleteCustomer(id);
     }

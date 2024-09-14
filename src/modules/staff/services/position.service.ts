@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Positions } from "../entities/positions.entity";
@@ -22,17 +22,24 @@ export class PositionService {
         }
         try {
             const position = await this.positionRepository.save(body);
-            return { message: `Position "${position.position}" created successfully` };
+            return { message: `Position ${position.position} created successfully` };
         } catch (error) {
             throw new BadRequestException('Error creating position');
         }
     }
 
     async deletePosition(id: number): Promise<{ message: string }> {
-        const result = await this.positionRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Position wi ID ${id} not found`);
+        try {
+            const result = await this.positionRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Position with ID ${id} not found`);
+            }
+            return { message: `Position with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete position with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting position: ${error.message}`);
         }
-        return { message: `Position with ID ${id} successfully deleted` };
     }
 }

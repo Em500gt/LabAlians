@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 const bcrypt = require('bcryptjs');
 import 'dotenv/config';
 
-export class Insert1725366646899 implements MigrationInterface {
+export class Insert1726313204699 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const staffGroupID = await queryRunner.query(`
-            INSERT INTO "staff_groups" ("staffGroup", "canAddRecords", "canEditRecords", "canDeleteRecords", "canAccessFiles")
+            INSERT INTO "staff_groups" ("staffGroup", "canViewRecords", "canAddRecords", "canEditRecords", "canDeleteRecords", "canAccessFiles", "fullAccess")
             VALUES 
-            ('Admin', true, true, true, true)
+            ('Admin', false, false, false, false, false, true)
             RETURNING id
             `)
 
@@ -45,11 +45,6 @@ export class Insert1725366646899 implements MigrationInterface {
             INSERT INTO "accounts" ("login", "password", "staffGroupID", "staffID")
             VALUES
             ('${process.env.LOGIN_ADMIN}', '${hashedPassword}', ${staffGroupID[0]?.id}, ${staffID[0]?.id})
-            `)
-        
-        await queryRunner.query(`
-            INSERT INTO "customer_types" ("type")
-            VALUES('Legal entity'), ('Individual') 
             `)
     }
 

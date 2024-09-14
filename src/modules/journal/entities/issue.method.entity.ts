@@ -9,6 +9,6 @@ export class IssueMethod {
     @Column()
     method: string;
 
-    @OneToOne(() => IssueJournal, issuejournal => issuejournal.issueMethodID)
+    @OneToMany(() => IssueJournal, issuejournal => issuejournal.issueMethodID)
     issuejournalID: IssueJournal[];
 }

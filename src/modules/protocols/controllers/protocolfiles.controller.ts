@@ -10,6 +10,7 @@ import { PermissionsGuard } from "auth/guard/permissions.guard";
 
 @Controller('protocolfiles')
 @UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class ProtocolFilesController {
     constructor(private readonly protocolFilesService: ProtocolFilesService) { }
 
@@ -20,8 +21,7 @@ export class ProtocolFilesController {
     ): Promise<StreamableFile> {
         const file = await this.protocolFilesService.findProtocolFiles(protocolID);
         const gunzipAsync = promisify(gunzipCb);
-        console.log(gunzipAsync);
-        
+
         return new StreamableFile(await gunzipAsync(file.pdfData), {
             type: 'application/pdf',
             disposition: `attachment; filename="${file.filename}"`,
@@ -44,7 +44,8 @@ export class ProtocolFilesController {
             throw new HttpException('File upload failed!', HttpStatus.BAD_REQUEST);
         }
         const compressedPdfData = await gzipAsync(file.buffer)
-        return await this.protocolFilesService.createProtocolFiles(protocolID, file.originalname, compressedPdfData);
+        const filename = `protocol_${protocolID}.pdf`;
+        return await this.protocolFilesService.createProtocolFiles(protocolID, filename, compressedPdfData);
     }
 
     @Delete(':protocolID/delete')
