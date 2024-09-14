@@ -17,20 +17,19 @@ export class ProtocolFilesService {
     async findProtocolFiles(protocolID: number): Promise<ProtocolFiles> {
         const file = await this.protocolFilesRepository.findOne({ where: { protocolID: { id: protocolID } } })
         if (!file) {
-            throw new NotFoundException(`File with protocol ID ${protocolID} not found`)
+            throw new NotFoundException(`File with protocol ID ${protocolID} not found`);
         }
         return file;
     }
 
     async createProtocolFiles(protocolID: number, filename: string, pdfData: Buffer): Promise<{ message: string }> {
-        await this.checkProtocol(protocolID);
+        const protocol = await this.checkProtocol(protocolID);
         await this.checkProtocolFile(protocolID);
-
         try {
             const protocolFile = await this.protocolFilesRepository.save({
                 filename,
                 pdfData,
-                protocolID: { id: protocolID } as Protocols,
+                protocolID: { id: protocol.id },
             });
             return { message: `Protocol file ${protocolFile.filename} uploaded successfully` };
         } catch (error) {
@@ -39,9 +38,11 @@ export class ProtocolFilesService {
     }
 
     async deleteProtocolFile(protocolID: number): Promise<{ message: string }> {
-        await this.checkProtocol(protocolID);
-        
-        const result = await this.protocolFilesRepository.delete({ protocolID: { id: protocolID } })
+        const protocol = await this.checkProtocol(protocolID);
+        if (protocol.isLssied) {
+            throw new BadRequestException(`The protocol file cannot be deleted because it has already been issued`);
+        }
+        const result = await this.protocolFilesRepository.delete({ protocolID: { id: protocol.id } })
         if (result.affected === 0) {
             throw new NotFoundException(`File with protocol ID ${protocolID} not found`);
         }
@@ -53,6 +54,7 @@ export class ProtocolFilesService {
         if (!protocol) {
             throw new NotFoundException(`Protocol with ID ${id} not found`);
         }
+        return protocol;
     }
 
     private async checkProtocolFile(id: number): Promise<any> {

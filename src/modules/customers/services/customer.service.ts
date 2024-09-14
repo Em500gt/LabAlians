@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Customers } from "../entities/customers.entity";
 import { Repository } from "typeorm";
@@ -22,7 +22,7 @@ export class CustomerService {
     async createCustomer(body: CustomerCreateDto): Promise<{ message: string }> {
         try {
             const existingCustomer = await this.customersRepository.findOne({ where: { customerName: body.customerName } })
-            if(existingCustomer){
+            if (existingCustomer) {
                 throw new BadRequestException('Customer already exists');
             }
 
@@ -70,10 +70,17 @@ export class CustomerService {
     }
 
     async deleteCustomer(id: number): Promise<{ message: string }> {
-        const deleteCustomer = await this.customersRepository.delete(id)
-        if (deleteCustomer.affected === 0) {
-            throw new NotFoundException(`Customer with ${id} not found`);
+        try {
+            const deleteCustomer = await this.customersRepository.delete(id)
+            if (deleteCustomer.affected === 0) {
+                throw new NotFoundException(`Customer with ${id} not found`);
+            }
+            return { message: `Customer with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete customer with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting customer: ${error.message}`);
         }
-        return { message: `Staff with ID ${id} successfully deleted` };
     }
 }

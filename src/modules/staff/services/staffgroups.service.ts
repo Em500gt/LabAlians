@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { Repository } from "typeorm";
@@ -35,11 +35,18 @@ export class StaffGroupsService {
     }
 
     async deleteStaffGroups(id: number): Promise<{ message: string }> {
-        const result = await this.staffGroupsRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Staff group with ID ${id} not found`);
+        try {
+            const result = await this.staffGroupsRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Staff group with ID ${id} not found`);
+            }
+            return { message: `Staff group with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete staff group with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting staff group: ${error.message}`);
         }
-        return { message: `Staff group with ID ${id} successfully deleted` };
     }
 
     private async staffGroupFind(staffGroup: string): Promise<void> {

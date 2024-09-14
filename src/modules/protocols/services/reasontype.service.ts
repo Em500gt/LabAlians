@@ -33,10 +33,17 @@ export class ReasonTypeService {
     }
 
     async deleteReasonType(id: number): Promise<{ message: string }> {
-        const result = await this.reasonTypeRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Reason type with ID ${id} not found`);
+        try {
+            const result = await this.reasonTypeRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Reason type with ID ${id} not found`);
+            }
+            return { message: `Reason type with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete reason type with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting reason type: ${error.message}`);
         }
-        return { message: `Reason type with ID ${id} successfully deleted` };
     }
 }

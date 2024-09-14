@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Divisions } from "../entities/divisions.entity";
 import { Repository } from "typeorm";
@@ -29,10 +29,18 @@ export class DivisionService {
     }
 
     async deleteDivision(id: number): Promise<{ message: string }> {
-        const result = await this.divisionRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Division with ID ${id} not found`);
+        try {
+            const result = await this.divisionRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Division with ID ${id} not found`);
+            }
+            return { message: `Division with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete division with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting division: ${error.message}`);
         }
-        return { message: `Division with ID ${id} successfully deleted` };
+
     }
 }

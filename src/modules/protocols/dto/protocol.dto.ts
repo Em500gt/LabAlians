@@ -11,8 +11,8 @@ export class ProtocolCreateDto {
     @IsDate()
     creationDate: Date;
 
+    @IsNotEmpty({ message: 'Work date is required' })
     @IsDate({ message: 'Invalid date format for work date' })
-    @IsOptional()
     @Type(() => Date)
     workDate: Date;
 

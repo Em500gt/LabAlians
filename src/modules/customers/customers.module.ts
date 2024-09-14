@@ -13,4 +13,5 @@ import { CustomerTypeService } from './services/customertype.service';
     providers: [CustomerService, CustomerTypeService],
     exports: [TypeOrmModule]
 })
+
 export class CustomersModule { }

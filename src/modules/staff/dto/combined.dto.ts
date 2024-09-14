@@ -8,6 +8,6 @@ export class CombinedDto extends IntersectionType(
 ) { }
 
 export class CombinedUpdateDto extends IntersectionType(
-        StaffUpdateDto,
-        AccountUpdateDto
+    StaffUpdateDto,
+    AccountUpdateDto
 ) { }

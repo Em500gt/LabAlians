@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Patch, Post, Body, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Patch, Post, Body, UseGuards, Req, BadRequestException } from "@nestjs/common";
 import { StaffService } from "../services/staff.service";
 import { Staff } from "../entities/staff.entity";
 import { CombinedDto, CombinedUpdateDto } from "../dto/combined.dto";
@@ -6,20 +6,18 @@ import { ValidateIdPipe } from "pipes/validate.id.pipe";
 import { CheckPermissions } from "common/decorators/check-permissions.decorator";
 import { PermissionsGuard } from "auth/guard/permissions.guard";
 
-
 @Controller('staff')
 @UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class StaffController {
     constructor(private staffService: StaffService) { }
-    
+
     @Get()
-    // @CheckPermissions('canEditRecords')
     async findStaff(): Promise<Staff[]> {
         return await this.staffService.findStaff();
     }
 
     @Post()
-    // @CheckPermissions('canEditRecords')
     async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.createStaff(body);
     }
@@ -30,8 +28,10 @@ export class StaffController {
     }
 
     @Delete(':id')
-    async deleteStaff(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
+    async deleteStaff(@Param('id', ValidateIdPipe) id: number, @Req() req: { user: { id: number } }): Promise<{ message: string }> {
+        if (id === req.user.id) {
+            throw new BadRequestException(`You can't delete yourself`);
+        }
         return await this.staffService.deleteStaff(id);
     }
-
 }

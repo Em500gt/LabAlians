@@ -7,23 +7,25 @@ import { CustomerCreateDto, CustomerUpdateDto } from "../dto/customer.create.dto
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
 
 @Controller('customer')
+@CheckPermissions('fullAccess')
 @UseGuards(PermissionsGuard)
 export class CustomerController {
     constructor(private customerService: CustomerService) { }
 
     @Get()
-    // @CheckPermissions('canEditRecords')
+    @CheckPermissions('canViewRecords')
     async findCustomer(): Promise<Customers[]> {
         return this.customerService.findCustomer();
     }
 
     @Post()
-    // @CheckPermissions('canEditRecords')
+    @CheckPermissions('canAddRecords')
     async createCustomer(@Body() body: CustomerCreateDto): Promise<{ message: string }> {
         return await this.customerService.createCustomer(body);
     }
 
     @Patch(':id')
+    @CheckPermissions('canEditRecords')
     async updateCustomer(@Param('id', ValidateIdPipe) id: number, @Body() body: CustomerUpdateDto): Promise<{ message: string }> {
         return await this.customerService.updateCustomer(id, body);
     }

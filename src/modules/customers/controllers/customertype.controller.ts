@@ -4,13 +4,16 @@ import { CustomerTypeDto } from "../dto/customer.type.dto";
 import { CustomerTypeService } from "../services/customertype.service";
 import { CustomerTypes } from "../entities/customer.type.entity";
 import { ValidateIdPipe } from "pipes/validate.id.pipe";
+import { CheckPermissions } from "common/decorators/check-permissions.decorator";
 
 @Controller('customertype')
 @UseGuards(PermissionsGuard)
+@CheckPermissions('fullAccess')
 export class CustomerTypeController {
     constructor(private customerTypeService: CustomerTypeService) { }
 
     @Get()
+    @CheckPermissions('canViewRecords')
     async findCustomerType(): Promise<CustomerTypes[]> {
         return await this.customerTypeService.findCustomerType();
     }

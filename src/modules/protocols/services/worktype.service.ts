@@ -35,10 +35,17 @@ export class WorkTypeService {
     }
 
     async deleteWorkType(id: number): Promise<{ message: string }> {
-        const result = await this.workTypeRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Work type with ID ${id} not found`);
+        try {
+            const result = await this.workTypeRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Work type with ID ${id} not found`);
+            }
+            return { message: `Work type with ID ${id} successfully deleted` };
+        } catch (error) {
+            if (error.code === '23503') {
+                throw new BadRequestException(`Cannot delete work type with ID ${id}, as it is still referenced by other entities`);
+            }
+            throw new InternalServerErrorException(`Error deleting work type: ${error.message}`);
         }
-        return { message: `Work type with ID ${id} successfully deleted` };
     }
 }

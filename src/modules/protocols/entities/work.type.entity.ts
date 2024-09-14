@@ -11,6 +11,4 @@ export class WorkType {
 
     @OneToMany(() => Protocols, protocols => protocols.workTypeID)
     protocols: Protocols[];
-
-    /// тип работ
 }
