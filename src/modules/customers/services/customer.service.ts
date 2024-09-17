@@ -28,7 +28,7 @@ export class CustomerService {
 
             const customerType = await this.customersTypeRepository.findOne({ where: { id: body.customerTypeID } });
             if (!customerType) {
-                throw new BadRequestException('Customer type not found');
+                throw new NotFoundException('Customer type not found');
             }
             const customer = this.customersRepository.create({
                 ...body,
