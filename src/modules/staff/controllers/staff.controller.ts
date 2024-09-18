@@ -7,7 +7,6 @@ import { CheckPermissions } from "common/decorators/check-permissions.decorator"
 import { PermissionsGuard } from "auth/guard/permissions.guard";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-
 @ApiTags('Staff')
 @ApiBearerAuth()
 @Controller('staff')
@@ -17,9 +16,9 @@ export class StaffController {
     constructor(private staffService: StaffService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список всех сотрудников' })
+    @ApiOperation({ summary: 'Get a list of all staff' })
     @ApiResponse({
-        status: 200, description: 'Успешное получение списка сотрудников', schema: {
+        status: 200, schema: {
             example: {
                 id: 1,
                 firstname: 'test',
@@ -30,73 +29,86 @@ export class StaffController {
             }
         }
     })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocols from database' })
     async findStaff(): Promise<Staff[]> {
         return await this.staffService.findStaff();
     }
 
     @Post()
-    @ApiOperation({ summary: 'Создать нового сотрудника' })
-    @ApiBody({
-        description: 'Данные для записи', schema: {
-            example: {
-                firstname: 'John',
-                lastname: 'Doe',
-                tabelNum: 123,
-                positionID: 1,
-                divisionID: 1,
-                login: 'johndoe',
-                password: 'P@ssw0rd',
-                staffGroupID: 1
-            }
-        }
-
+    @ApiOperation({ summary: 'Create a new staff' })
+    @ApiBody({ type: CombinedDto })
+    @ApiResponse({ status: 201, description: 'Staff created successfully' })
+    @ApiResponse({
+        status: 400,
+        description: `
+        Possible errors:
+        - Login already exists
+        - Tabel number already exists
+        `
     })
-    @ApiResponse({ status: 201, description: 'Сотрудник успешно создан' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
-    @ApiResponse({ status: 500, description: 'Ошибка с транзакцией базы данных' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({
+        status: 404,
+        description: `
+        Possible errors:
+        - Position not found
+        - Division not found
+        - Staff group not found
+        `
+    })
+    @ApiResponse({
+        status: 500,
+        description: `
+        Possible errors:
+        - An error occurred while processing the transaction
+        - PASSWORD_SALT is not defined in the environment variables
+        - PASSWORD_SALT is not a valid number
+        `
+    })
     async createStaff(@Body() body: CombinedDto): Promise<{ message: string }> {
         return await this.staffService.createStaff(body);
     }
 
     @Patch(':id')
-    @ApiOperation({ summary: 'Обновить информацию о сотруднике' })
-    @ApiBody({
-        description: 'Данные для записи', schema: {
-            example: {
-                firstname: 'John',
-                lastname: 'Doe',
-                tabelNum: 123,
-                positionID: 1,
-                divisionID: 1,
-                staffGroupID: 1
-            }
-        }
-
+    @ApiOperation({ summary: 'Update staff information' })
+    @ApiBody({ type: CombinedUpdateDto })
+    @ApiResponse({ status: 200, description: 'Staff updated successfully' })
+    @ApiResponse({ status: 400, description: 'Tabel number already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({
+        status: 404,
+        description: `
+        Possible errors:
+        - Staff with ID not found
+        - Position not found
+        - Division not found
+        - Staff group not found
+        `
     })
-    @ApiResponse({ status: 200, description: 'Сотрудник успешно обновлен' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
-    @ApiResponse({ status: 500, description: 'Ошибка с транзакцией базы данных' })
+    @ApiResponse({ status: 500, description: 'An error occurred while processing the transaction' })
     async updateStaff(@Param('id', ValidateIdPipe) id: number, @Body() body: CombinedUpdateDto): Promise<{ message: string }> {
         return await this.staffService.updateStaff(id, body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить сотрудника' })
-    @ApiResponse({ status: 200, description: 'Сотрудник успешно удален' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить себя или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Сотрудник не найден' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete staff' })
+    @ApiResponse({ status: 200, description: 'Staff with ID succesfully deleted' })
+    @ApiResponse({
+        status: 400,
+        description: `
+        Possible errors:
+        - Cannot delete staff with ID, as it is still referenced by other entities
+        - You can't delete yourself
+        `
+    })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Staff with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting staff' })
     async deleteStaff(@Param('id', ValidateIdPipe) id: number, @Req() req: { user: { id: number } }): Promise<{ message: string }> {
         if (id === req.user.id) {
             throw new BadRequestException(`You can't delete yourself`);

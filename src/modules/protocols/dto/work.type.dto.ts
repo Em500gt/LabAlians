@@ -3,8 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class WorkTypeDto {
     @ApiProperty({
-        description: 'Тип работы',
-        example: 'Проектирование',
+        example: 1,
+        description: 'Unique identifier of the work type',
+        readOnly: true,
+    })
+    id: number;
+
+    @ApiProperty({
+        description: 'Type works',
+        example: 'Design',
         minLength: 5,
         maxLength: 32,
     })

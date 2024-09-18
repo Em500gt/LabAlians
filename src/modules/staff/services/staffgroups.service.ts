@@ -21,11 +21,13 @@ export class StaffGroupsService {
             const staffGroup = await this.staffGroupsRepository.save(body);
             return { message: `Staff group "${staffGroup.staffGroup}" created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating position');
+            throw new InternalServerErrorException('Error creating position');
         }
     }
 
     async updateStaffGroups(id: number, body: UpdateStaffGroupsDto): Promise<{ message: string }> {
+        console.log(body);
+        
         const staffGroup = await this.staffGroupsRepository.findOne({ where: { id } });
         if (!staffGroup) {
             throw new NotFoundException(`Staff group with ID ${id} not found`);

@@ -14,9 +14,9 @@ export class AuthController {
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
-  @ApiOperation({ summary: 'Авторизация пользователя' })
+  @ApiOperation({ summary: 'Staff authorization' })
   @ApiBody({
-    description: 'Данные для входа', schema: {
+    schema: {
       example: {
         login: '...',
         password: '...'
@@ -24,28 +24,39 @@ export class AuthController {
     }
   })
   @ApiResponse({ status: 200, schema: { example: { accessToken: '...', refreshToken: '...' } } })
-  @ApiResponse({ status: 401, description: 'Неверный логин или пароль' })
+  @ApiResponse({ status: 401, description: 'Login or password are incorrect!' })
   async login(@Request() req: { user: IStaff }): Promise<{ accessToken: string, refreshToken: string }> {
     return await this.authService.login(req.user)
   }
 
   @Post('refresh')
   @Public()
-  @ApiOperation({ summary: 'Обновление токена' })
-  @ApiBody({ description: 'Токен обновления', schema: { example: { refreshToken: '...' } } })
+  @ApiOperation({ summary: 'Update access token' })
+  @ApiBody({ schema: { example: { refreshToken: '...' } } })
   @ApiResponse({ status: 200, schema: { example: { accessToken: '...' } } })
-  @ApiResponse({ status: 401, description: 'Недействительный токен обновления' })
+  @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   async refresh(@Body('refreshToken') refreshToken: string): Promise<{ accessToken: string }> {
     return await this.authService.refreshToken(refreshToken);
   }
 
   @Post('changepassword')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Смена пароля пользователя' })
-  @ApiBody({ description: 'Данные для смены пароля', type: ChangePasswordDto })
-  @ApiResponse({ status: 200, description: 'Пароль успешно изменен' })
-  @ApiResponse({ status: 400, description: 'Новый пароль не может быть таким же, как старый' })
-  @ApiResponse({ status: 401, description: 'Текущий пароль неверен' })
+  @ApiOperation({ summary: 'Change password' })
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiResponse({ status: 200, description: 'Password updated successfully' })
+  @ApiResponse({ status: 400, description: 'New password cannot be the same as the old password' })
+  @ApiResponse({ status: 401, description: 'Current password is incorrect' })
+  @ApiResponse({ status: 404, description: 'Staff account not found' })
+  @ApiResponse({ status: 500, description: 'An error occurred while updating the password' })
+  @ApiResponse({
+    status: 500,
+    description: `
+    Possible errors:
+    - An error occurred while processing the transaction
+    - PASSWORD_SALT is not defined in the environment variables
+    - PASSWORD_SALT is not a valid number
+    `
+  })
   async changePassword(@Request() req: { user: IStaff }, @Body() body: ChangePasswordDto): Promise<{ message: string }> {
     const { id, login } = req.user;
     if (body.password === body.newPassword) {

@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class IssueJournalDto {
     @ApiProperty({
-        description: 'ID метода выдачи',
+        description: 'ID journal method',
         example: 1,
         minimum: 1,
         type: Number,

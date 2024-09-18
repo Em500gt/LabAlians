@@ -3,8 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ReasonTypeDto {
     @ApiProperty({
-        description: 'Основание',
-        example: 'Запрос клиента',
+        example: 1,
+        description: 'Unique identifier of the reason type',
+        readOnly: true, 
+    })
+    id: number;
+
+    @ApiProperty({
+        description: 'Reason',
+        example: 'Customer request',
         minLength: 5,
         maxLength: 32,
     })

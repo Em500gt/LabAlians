@@ -49,29 +49,30 @@ export class StaffService {
     }
 
     async createStaff(body: CombinedDto): Promise<{ message: string }> {
-        await this.validateUniqueLogin(body.login);
-        await this.validateUniqueTabelNum(body.tabelNum);
-        await this.validatePositionExists(body.positionID);
-        await this.validateDivisionExists(body.divisionID);
-        await this.validateStaffGroupExists(body.staffGroupID);
+        const { staffCreateData, accountCreateDto } = body;
+        await this.validateUniqueLogin(accountCreateDto.login);
+        await this.validateUniqueTabelNum(staffCreateData.tabelNum);
+        await this.validatePositionExists(staffCreateData.positionID);
+        await this.validateDivisionExists(staffCreateData.divisionID);
+        await this.validateStaffGroupExists(accountCreateDto.staffGroupID);
 
         const saltRounds = this.getSaltRounds();
-        const hashedPassword = await bcrypt.hash(body.password, saltRounds);
+        const hashedPassword = await bcrypt.hash(accountCreateDto.password, saltRounds);
 
         return await this.staffRepository.manager.transaction(async (transactionalEntityManager: EntityManager) => {
             try {
                 const staff = await transactionalEntityManager.save(Staff, {
-                    firstname: body.firstname,
-                    lastname: body.lastname,
-                    tabelNum: body.tabelNum,
-                    positionID: { id: body.positionID } as Positions,
-                    divisionID: { id: body.divisionID } as Divisions,
+                    firstname: staffCreateData.firstname,
+                    lastname: staffCreateData.lastname,
+                    tabelNum: staffCreateData.tabelNum,
+                    positionID: { id: staffCreateData.positionID } as Positions,
+                    divisionID: { id: staffCreateData.divisionID } as Divisions,
                 });
 
                 await transactionalEntityManager.save(Accounts, {
-                    login: body.login,
+                    login: accountCreateDto.login,
                     password: hashedPassword,
-                    staffGroup: { id: body.staffGroupID } as StaffGroups,
+                    staffGroup: { id: accountCreateDto.staffGroupID } as StaffGroups,
                     staff: staff
                 });
 
@@ -91,24 +92,25 @@ export class StaffService {
                 if (!existingStaff) {
                     throw new NotFoundException(`Staff with ID ${id} not found`);
                 }
+                const {staffUpdateDto, acountUpdateDto} = body;
 
-                if (body.firstname) {
-                    existingStaff.firstname = body.firstname;
+                if (staffUpdateDto.firstname) {
+                    existingStaff.firstname = staffUpdateDto.firstname;
                 }
-                if (body.lastname) {
-                    existingStaff.lastname = body.lastname;
+                if (staffUpdateDto.lastname) {
+                    existingStaff.lastname = staffUpdateDto.lastname;
                 }
-                if (body.tabelNum) {
-                    await this.validateUniqueTabelNum(body.tabelNum);
-                    existingStaff.tabelNum = body.tabelNum;
+                if (staffUpdateDto.tabelNum) {
+                    await this.validateUniqueTabelNum(staffUpdateDto.tabelNum);
+                    existingStaff.tabelNum = staffUpdateDto.tabelNum;
                 }
-                if (body.positionID) {
-                    await this.validatePositionExists(body.positionID);
-                    existingStaff.positionID = { id: body.positionID } as Positions;
+                if (staffUpdateDto.positionID) {
+                    await this.validatePositionExists(staffUpdateDto.positionID);
+                    existingStaff.positionID = { id: staffUpdateDto.positionID } as Positions;
                 }
-                if (body.divisionID) {
-                    await this.validateDivisionExists(body.divisionID);
-                    existingStaff.divisionID = { id: body.divisionID } as Divisions;
+                if (staffUpdateDto.divisionID) {
+                    await this.validateDivisionExists(staffUpdateDto.divisionID);
+                    existingStaff.divisionID = { id: staffUpdateDto.divisionID } as Divisions;
                 }
 
                 const updatedStaff = await transactionalEntityManager.save(Staff, existingStaff);
@@ -120,9 +122,9 @@ export class StaffService {
                 if (existingAccount) {
                     let accountUpdated = false;
 
-                    if (body.staffGroupID) {
-                        await this.validateStaffGroupExists(body.staffGroupID);
-                        existingAccount.staffGroup = { id: body.staffGroupID } as StaffGroups;
+                    if (acountUpdateDto.staffGroupID) {
+                        await this.validateStaffGroupExists(acountUpdateDto.staffGroupID);
+                        existingAccount.staffGroup = { id: acountUpdateDto.staffGroupID } as StaffGroups;
                         accountUpdated = true;
                     }
 
@@ -194,11 +196,11 @@ export class StaffService {
     private getSaltRounds(): number {
         const saltRoundsStr = this.configService.get<string>('PASSWORD_SALT');
         if (!saltRoundsStr) {
-            throw new BadRequestException('PASSWORD_SALT is not defined in the environment variables');
+            throw new InternalServerErrorException('PASSWORD_SALT is not defined in the environment variables');
         }
         const saltRounds = parseInt(saltRoundsStr, 10);
         if (isNaN(saltRounds)) {
-            throw new BadRequestException('PASSWORD_SALT is not a valid number');
+            throw new InternalServerErrorException('PASSWORD_SALT is not a valid number');
         }
         return saltRounds;
     }

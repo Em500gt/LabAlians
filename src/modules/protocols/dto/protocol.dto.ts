@@ -1,30 +1,31 @@
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
 import { Type } from 'class-transformer';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ProtocolCreateDto {
-    @ApiPropertyOptional({
-        description: 'Признак аккредитации',
+    @ApiProperty({
+        description: 'Accreditation flag',
         example: true,
-        type: Boolean,
+        required: false,
     })
     @IsOptional()
     @IsBoolean()
     isAccreditation?: boolean;
 
-    @ApiPropertyOptional({
-        description: 'Дата создания',
+    @ApiProperty({
+        description: 'Creation date',
         example: '2024-09-15',
         type: 'string',
         format: 'date-time',
+        readOnly: true,
     })
     @IsOptional()
     @IsDate()
     creationDate: Date;
 
     @ApiProperty({
-        description: 'Дата выполнения работ',
+        description: 'Work date',
         example: '2024-09-17T00:00:00Z',
     })
     @IsNotEmpty({ message: 'Work date is required' })
@@ -33,8 +34,8 @@ export class ProtocolCreateDto {
     workDate: Date;
 
     @ApiProperty({
-        description: 'Объект работ',
-        example: 'Установка оборудования',
+        description: 'Work object',
+        example: 'Equipment installation',
         minLength: 2,
         maxLength: 100,
     })
@@ -44,12 +45,12 @@ export class ProtocolCreateDto {
     @MaxLength(100, { message: 'Work object must not exceed 100 characters' })
     workObject: string;
 
-    @ApiPropertyOptional({
-        description: 'Количество копий',
+    @ApiProperty({
+        description: 'Number of copies',
         example: 3,
         minimum: 0,
         maximum: 100,
-        type: Number,
+        required: false,
     })
     @IsOptional()
     @IsNumber({}, { message: 'Copies number must be a number' })
@@ -58,76 +59,156 @@ export class ProtocolCreateDto {
     copies?: number;
 
     @ApiProperty({
-        description: 'Номер рабочего листа',
+        description: 'Work sheet number',
         example: 1234,
+        required: false,
     })
     @IsNotEmpty({ message: 'Work sheet number is required' })
     @IsNumber({}, { message: 'Work sheet number must be a number' })
-    @Min(1, { message: 'Work sheet number must be at least 0' })
-    @Max(10000, { message: 'Work sheet number must not exceed 100' })
+    @Min(1, { message: 'Work sheet number must be at least 1' })
+    @Max(10000, { message: 'Work sheet number must not exceed 10000' })
     workSheetNum?: number;
 
-    @ApiPropertyOptional({
-        description: 'Примечание',
-        example: 'Дополнительная информация',
-        type: String,
+    @ApiProperty({
+        description: 'Note',
+        example: 'Additional information',
+        required: false,
     })
     @IsOptional()
-    @IsString({ message: 'Note must be string' })
+    @IsString({ message: 'Note must be a string' })
     note?: string;
 
-    @ApiPropertyOptional({
-        description: 'ID типа причины',
+    @ApiProperty({
+        description: 'Reason type ID',
         example: 2,
         minimum: 1,
-        type: Number,
+        required: false,
     })
     @IsOptional()
     @IsNumber({}, { message: 'Reason type ID must be a number' })
     @Min(1, { message: 'Reason type ID must be at least 1' })
     reasonTypeID?: number;
 
-    @ApiPropertyOptional({
-        description: 'ID типа работы',
+    @ApiProperty({
+        description: 'Work type ID',
         example: 3,
         minimum: 1,
-        type: Number,
+        required: false,
     })
     @IsOptional()
-    @IsNumber({}, { message: 'Work type  ID must be a number' })
-    @Min(1, { message: 'Work type  ID must be at least 1' })
+    @IsNumber({}, { message: 'Work type ID must be a number' })
+    @Min(1, { message: 'Work type ID must be at least 1' })
     workTypeID?: number;
 
-    @ApiPropertyOptional({
-        description: 'ID статуса протокола',
+    @ApiProperty({
+        description: 'Protocol status ID',
         example: 4,
         minimum: 1,
-        type: Number,
+        required: false,
     })
     @IsOptional()
     @IsNumber({}, { message: 'Protocol status ID must be a number' })
     @Min(1, { message: 'Protocol status ID must be at least 1' })
     protocolStatusID?: number;
 
-    @ApiPropertyOptional({
-        description: 'ID клиента',
+    @ApiProperty({
+        description: 'Customer ID',
         example: 5,
         minimum: 1,
-        type: Number,
+        required: false,
     })
     @IsOptional()
     @IsNumber({}, { message: 'Customer ID must be a number' })
     @Min(1, { message: 'Customer ID must be at least 1' })
     customerID?: number;
 
-    @ApiPropertyOptional({
-        description: 'ID сотрудника',
+    @ApiProperty({
+        description: 'Staff ID',
         example: 6,
-        type: Number,
+        required: false,
+        readOnly: true,
     })
     @IsOptional()
     @IsNumber({}, { message: 'Staff ID must be a number' })
     staffID?: number;
 }
 
-export class ProtocolUpdateDto extends OmitType(PartialType(ProtocolCreateDto), ['creationDate', 'staffID'] as const) { }
+export class ProtocolUpdateDto extends PartialType(ProtocolCreateDto) { 
+    @ApiProperty({
+        description: 'Accreditation flag',
+        example: true,
+        required: false,
+    })
+    isAccreditation?: boolean;
+
+    @ApiProperty({
+        description: 'Work date',
+        example: '2024-09-17T00:00:00Z',
+        required: false,
+    })
+    workDate?: Date;
+
+    @ApiProperty({
+        description: 'Work object',
+        example: 'Equipment installation',
+        minLength: 2,
+        maxLength: 100,
+        required: false,
+    })
+    workObject?: string;
+
+    @ApiProperty({
+        description: 'Number of copies',
+        example: 3,
+        minimum: 0,
+        maximum: 100,
+        required: false,
+    })
+    copies?: number;
+
+    @ApiProperty({
+        description: 'Work sheet number',
+        example: 1234,
+        required: false,
+    })
+    workSheetNum?: number;
+
+    @ApiProperty({
+        description: 'Note',
+        example: 'Additional information',
+        required: false,
+    })
+    note?: string;
+
+    @ApiProperty({
+        description: 'Reason type ID',
+        example: 2,
+        minimum: 1,
+        required: false,
+    })
+    reasonTypeID?: number;
+
+    @ApiProperty({
+        description: 'Work type ID',
+        example: 3,
+        minimum: 1,
+        required: false,
+    })
+    workTypeID?: number;
+
+    @ApiProperty({
+        description: 'Protocol status ID',
+        example: 4,
+        minimum: 1,
+        required: false,
+    })
+    protocolStatusID?: number;
+
+    @ApiProperty({
+        description: 'Customer ID',
+        example: 5,
+        minimum: 1,
+        required: false,
+    })
+    customerID?: number;
+}

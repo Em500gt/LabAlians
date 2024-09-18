@@ -3,10 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PositionDto {
     @ApiProperty({
-        description: 'Должность сотрудника',
+        example: 1,
+        description: 'Unique identifier of the position',
+        readOnly: true,
+      })
+      id: number;
+
+    @ApiProperty({
+        description: 'Employee position',
         minLength: 2,
         maxLength: 20,
-        example: 'Менеджер',
+        example: 'Manager',
     })
     @IsNotEmpty({ message: 'Position is required' })
     @IsString({ message: 'Position must be a string' })

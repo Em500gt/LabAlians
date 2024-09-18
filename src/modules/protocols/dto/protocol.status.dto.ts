@@ -3,8 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProtocolStatusDto {
     @ApiProperty({
-        description: 'Статус протокола',
-        example: 'Ожидание',
+        example: 1,
+        description: 'Unique identifier of the protocol status',
+        readOnly: true, 
+    })
+    id: number;
+
+    @ApiProperty({
+        description: 'Protocol status',
+        example: 'Done',
         minLength: 2,
         maxLength: 20,
     })

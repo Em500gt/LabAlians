@@ -1,13 +1,20 @@
 import { IsString, IsBoolean, IsOptional, Length, IsNotEmpty } from 'class-validator';
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class StaffGroupsDto {
     @ApiProperty({
-        description: 'Название группы сотрудников',
+        example: 1,
+        description: 'Unique identifier of the staff group',
+        readOnly: true,
+      })
+      id: number;
+
+    @ApiProperty({
+        description: 'Name of the employee group',
         minLength: 1,
         maxLength: 50,
-        example: 'Пользователь',
+        example: 'User',
     })
     @IsNotEmpty({ message: 'User group is required' })
     @IsString()
@@ -15,7 +22,7 @@ export class StaffGroupsDto {
     staffGroup: string;
 
     @ApiProperty({
-        description: 'Разрешение на просмотр записей',
+        description: 'Permission to view records',
         example: true,
     })
     @IsNotEmpty({ message: 'canViewRecords is required' })
@@ -23,7 +30,7 @@ export class StaffGroupsDto {
     canViewRecords: boolean;
 
     @ApiProperty({
-        description: 'Разрешение на добавление записей',
+        description: 'Permission to add records',
         example: false,
     })
     @IsNotEmpty({ message: 'canAddRecords is required' })
@@ -31,7 +38,7 @@ export class StaffGroupsDto {
     canAddRecords: boolean;
 
     @ApiProperty({
-        description: 'Разрешение на редактирование записей',
+        description: 'Permission to edit records',
         example: true,
     })
     @IsNotEmpty({ message: 'canEditRecords is required' })
@@ -39,7 +46,7 @@ export class StaffGroupsDto {
     canEditRecords: boolean;
 
     @ApiProperty({
-        description: 'Разрешение на удаление записей',
+        description: 'Permission to delete records',
         example: false,
     })
     @IsNotEmpty({ message: 'canDeleteRecords is required' })
@@ -47,7 +54,7 @@ export class StaffGroupsDto {
     canDeleteRecords: boolean;
 
     @ApiProperty({
-        description: 'Разрешение на доступ к файлам',
+        description: 'Permission to access files',
         example: true,
     })
     @IsNotEmpty({ message: 'canAccessFiles is required' })
@@ -55,7 +62,7 @@ export class StaffGroupsDto {
     canAccessFiles: boolean;
 
     @ApiProperty({
-        description: 'Полный доступ ко всем функциям системы',
+        description: 'Full access to all system features',
         example: false,
     })
     @IsNotEmpty({ message: 'fullAccess is required' })
@@ -63,4 +70,48 @@ export class StaffGroupsDto {
     fullAccess: boolean;
 }
 
-export class UpdateStaffGroupsDto extends OmitType(PartialType(StaffGroupsDto), ['staffGroup'] as const) { }
+export class UpdateStaffGroupsDto extends PartialType(StaffGroupsDto) {
+    @ApiProperty({
+        description: 'Permission to view records',
+        example: true,
+        required: false
+    })
+    canViewRecords?: boolean;
+
+    @ApiProperty({
+        description: 'Permission to add records',
+        example: false,
+        required: false
+    })
+    canAddRecords?: boolean;
+
+    @ApiProperty({
+        description: 'Permission to edit records',
+        example: true,
+        required: false
+    })
+    canEditRecords?: boolean;
+
+    @ApiProperty({
+        description: 'Permission to delete records',
+        example: false,
+        required: false
+    })
+    canDeleteRecords?: boolean;
+
+    @ApiProperty({
+        description: 'Permission to access files',
+        example: true,
+        required: false
+    })
+    canAccessFiles?: boolean;
+
+    @ApiProperty({
+        description: 'Full access to all system features',
+        example: false,
+        required: false
+    })
+    fullAccess?: boolean;
+
+
+}

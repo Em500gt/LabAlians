@@ -3,7 +3,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProtocolFileDto {
     @ApiProperty({
-        description: 'Имя файла',
+        example: 1,
+        description: 'Unique identifier of the protocol file',
+        readOnly: true,
+    })
+    id: number;
+
+    @ApiProperty({
+        description: 'File name',
         example: 'report.pdf',
         minLength: 1,
         maxLength: 50,
@@ -16,7 +23,7 @@ export class ProtocolFileDto {
     filename: string;
 
     @ApiProperty({
-        description: 'Данные PDF файла',
+        description: 'PDF file data',
         example: '<Buffer>',
         type: 'string',
         format: 'binary',
@@ -25,7 +32,7 @@ export class ProtocolFileDto {
     pdfData: Buffer;
 
     @ApiProperty({
-        description: 'ID протокола',
+        description: 'Protocol id',
         example: 1,
         minimum: 1,
         type: Number,

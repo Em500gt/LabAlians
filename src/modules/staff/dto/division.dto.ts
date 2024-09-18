@@ -3,10 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DivisionDto {
     @ApiProperty({
-        description: 'Отдел, в котором работает сотрудник',
+        example: 1,
+        description: 'Unique identifier of the division',
+        readOnly: true,
+      })
+      id: number;
+
+    @ApiProperty({
+        description: 'The department in which the employee works',
         minLength: 2,
         maxLength: 20,
-        example: 'Продажи',
+        example: 'Sales',
     })
     @IsNotEmpty({ message: 'Division is required' })
     @IsString({ message: 'Division must be a string' })

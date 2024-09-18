@@ -17,41 +17,35 @@ export class WorkTypeController {
 
     @Get()
     @CheckPermissions('canViewRecords')
-    @ApiOperation({ summary: 'Получить список работ' })
-    @ApiResponse({
-        status: 200, description: 'Успешное получение списка работ', schema: {
-            example: {
-                id: 1,
-                type: 'test'
-            }
-        }
-    })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of work type' })
+    @ApiResponse({ status: 200, type: WorkTypeDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve work types from database' })
     async getWorkType(): Promise<WorkType[]> {
         return await this.workTypeService.getWorkType();
     }
 
     @Post()
-    @ApiBody({ description: 'Данные для записи', type: WorkTypeDto })
-    @ApiOperation({ summary: 'Создать новую работу' })
-    @ApiResponse({ status: 201, description: 'Работа успешно создана' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
+    @ApiBody({ type: WorkTypeDto })
+    @ApiOperation({ summary: 'Create a new work type' })
+    @ApiResponse({ status: 201, description: 'Work type created successfully' })
+    @ApiResponse({ status: 400, description: 'Work type already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating work type' })
     async createWorkType(@Body() body: WorkTypeDto): Promise<{ message: string }> {
         return await this.workTypeService.createWorkType(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить работу' })
-    @ApiResponse({ status: 200, description: 'Работа успешно удалена' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить работу или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Работа не найдена' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Remove the work type' })
+    @ApiResponse({ status: 200, description: 'Work type with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete work type with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Work type with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting work type' })
     async deleteWorkType(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.workTypeService.deleteWorkType(id);
     }

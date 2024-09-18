@@ -24,7 +24,7 @@ export class IssueMethodService {
             const issueMethod = await this.issueMethodRepository.save(body);
             return { message: `Issue method ${issueMethod.method} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating issue method');
+            throw new InternalServerErrorException('Error creating issue method');
         }
     }
 
@@ -36,10 +36,13 @@ export class IssueMethodService {
             }
             return { message: `Issue method with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete issue method with ID ${id}, as it is still referenced by other entities`);
             }
-            throw new InternalServerErrorException(`Error deleting position: ${error.message}`);
+            throw new InternalServerErrorException(`Error deleting issue method: ${error.message}`);
         }
     }
 

@@ -16,41 +16,35 @@ export class PositionController {
     constructor(private positionService: PositionService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список должностей' })
-    @ApiResponse({
-        status: 200, description: 'Успешное получение списка должностей', schema: {
-            example: {
-                id: 1,
-                position: 'test'
-            }
-        }
-    })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of positions' })
+    @ApiResponse({ status: 200, type: PositionDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocols from database' })
     async getPosition(): Promise<Positions[]> {
         return await this.positionService.getPosition();
     }
 
     @Post()
     @ApiBody({ type: PositionDto })
-    @ApiOperation({ summary: 'Создать новую должность' })
-    @ApiResponse({ status: 201, description: 'Должность успешно создана' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
+    @ApiOperation({ summary: 'Create a new position' })
+    @ApiResponse({ status: 201, description: 'Position created successfully' })
+    @ApiResponse({ status: 400, description: 'Position already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating position' })
     async createPosition(@Body() body: PositionDto): Promise<{ message: string }> {
         return await this.positionService.createPosition(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить должность' })
-    @ApiResponse({ status: 200, description: 'Должность успешно удалена' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить должность или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Должность не найдена' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete position' })
+    @ApiResponse({ status: 200, description: 'Position with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete position with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Position with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting position' })
     async deletePosition(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.positionService.deletePosition(id);
     }

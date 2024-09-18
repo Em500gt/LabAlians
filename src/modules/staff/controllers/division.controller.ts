@@ -16,41 +16,35 @@ export class DivisionController {
     constructor(private divisionService: DivisionService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список служб' })
-    @ApiResponse({
-        status: 200, description: 'Успешное получение списка cлужб', schema: {
-            example: {
-                id: 1,
-                division: 'test'
-            }
-        }
-    })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get list of division' })
+    @ApiResponse({ status: 200, type: DivisionDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocols from database' })
     async getDivision(): Promise<Divisions[]> {
         return await this.divisionService.getDivision();
     }
 
     @Post()
-    @ApiBody({ description: 'Данные для записи', type: DivisionDto })
-    @ApiOperation({ summary: 'Создать новую службу' })
-    @ApiResponse({ status: 201, description: 'Служба успешно создана' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
+    @ApiOperation({ summary: 'Create a new division' })
+    @ApiBody({ type: DivisionDto })
+    @ApiResponse({ status: 201, description: 'Division created successfully' })
+    @ApiResponse({ status: 400, description: 'Division already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating division' })
     async createDivision(@Body() body: DivisionDto): Promise<{ message: string }> {
         return await this.divisionService.createDivision(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить службу' })
-    @ApiResponse({ status: 200, description: 'Служба успешно удалена' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить службу или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Служба не найдена' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete division' })
+    @ApiResponse({ status: 200, description: 'Division with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete division with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Division with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting division' })
     async deleteDivision(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.divisionService.deleteDivision(id);
     }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Protocols } from "../entities/protocols.entity";
 import { EntityManager, Repository } from "typeorm";
@@ -11,6 +11,7 @@ import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
 import { IssueJournalDto } from "modules/journal/dto/issue.journal.dto";
 import { IssueMethod } from "modules/journal/entities/issue.method.entity";
 import { ProtocolFiles } from "../entities/protocol.files.entity";
+import { IStaff } from "auth/types/types";
 
 @Injectable()
 export class ProtocolService {
@@ -71,16 +72,17 @@ export class ProtocolService {
             const protocol = await this.protocolsRepository.save(protocolData);
             return { message: `Protocol ${protocol.id} created successfully` };
         } catch (error) {
-            console.log(error);
-            throw new BadRequestException(`Error creating protocol`);
+            throw new InternalServerErrorException(`Error creating protocol`);
         }
     }
 
-    async updateProtocol(id: number, body: ProtocolUpdateDto) {
-        const protocol = await this.protocolsRepository.findOneBy({ id })
+    async updateProtocol(id: number, body: ProtocolUpdateDto, staffID: number) {
+        const protocol = await this.protocolsRepository.findOne({ where: { id }, relations: ['staffID'] })
         if (!protocol) {
             throw new NotFoundException(`Protocol with ID ${id} not found`);
         }
+        await this.checkForbiddenException(protocol.staffID.id, staffID);
+
         const [reasonTypeID, workTypeID, protocolStatusID, customerID] = await Promise.all([
             body.reasonTypeID ? this.checkReasonType(body.reasonTypeID) : protocol.reasonTypeID,
             body.workTypeID ? this.checkWorkType(body.workTypeID) : protocol.workTypeID,
@@ -104,25 +106,25 @@ export class ProtocolService {
             await this.protocolsRepository.save(updatedProtocolData);
             return { message: `Protocol ${id} updated successfully` };
         } catch (error) {
-            throw new BadRequestException(`Error updating protocol`);
+            throw new InternalServerErrorException(`Error updating protocol`);
         }
     }
 
-    async issueProtocol(id: number, body: IssueJournalDto): Promise<{ message: string }> {
+    async issueProtocol(id: number, body: IssueJournalDto, staffID: number): Promise<{ message: string }> {
         return await this.protocolsRepository.manager.transaction(async (transactionalEntityManager: EntityManager) => {
             try {
                 const protocol = await transactionalEntityManager.findOne(Protocols, {
                     where: { id },
-                    relations: ['reasonTypeID', 'workTypeID', 'protocolStatusID', 'customerID']
+                    relations: ['reasonTypeID', 'workTypeID', 'protocolStatusID', 'customerID', 'staffID']
                 })
-
                 if (!protocol) {
                     throw new NotFoundException(`Protocol with ID ${id} not found`);
                 }
+                await this.checkForbiddenException(protocol.staffID.id, staffID);
                 if (protocol.isLssied) {
                     throw new BadRequestException(`The protocol has already been issued to the customer`)
                 }
-                const findProtocolFile = await transactionalEntityManager.findOne(ProtocolFiles, { where: { protocolID: { id } } })     
+                const findProtocolFile = await transactionalEntityManager.findOne(ProtocolFiles, { where: { protocolID: { id } } })
                 if (!findProtocolFile) {
                     throw new BadRequestException(`Protocol file absent in protocol`)
                 }
@@ -140,7 +142,7 @@ export class ProtocolService {
                 })
                 return { message: `The protocol was successfully issued to the customer` };
             } catch (error) {
-                if (error instanceof BadRequestException || error instanceof NotFoundException) {
+                if (error instanceof BadRequestException || error instanceof NotFoundException || error instanceof ForbiddenException) {
                     throw error
                 }
                 throw new InternalServerErrorException('An error occurred while processing the transaction.', error.message);
@@ -208,6 +210,12 @@ export class ProtocolService {
             if (!protocol[field]) {
                 throw new BadRequestException(errorMessage);
             }
+        }
+    }
+
+    private async checkForbiddenException(protocolStaffID: number, staffID: number): Promise<void> {
+        if (protocolStaffID !== staffID) {
+            throw new ForbiddenException('You do not have the required permissions');
         }
     }
 }

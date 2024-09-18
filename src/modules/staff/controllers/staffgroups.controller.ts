@@ -17,49 +17,42 @@ export class StaffGroupsController {
     constructor(private staffGroupsService: StaffGroupsService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список групп сотрудников' })
-    @ApiResponse({ status: 200, description: 'Успешное получение списка групп сотрудников', type: [StaffGroupsDto] })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of staff groups' })
+    @ApiResponse({ status: 200, type: StaffGroupsDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocols from database' })
     async getStaffGroups(): Promise<StaffGroups[]> {
         return await this.staffGroupsService.getStaffGroups();
     }
 
     @Post()
     @ApiBody({ type: StaffGroupsDto })
-    @ApiOperation({ summary: 'Создать новой группы сотрудника' })
-    @ApiResponse({ status: 201, description: 'Группа успешно создана' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
+    @ApiOperation({ summary: 'Create a new staff group' })
+    @ApiResponse({ status: 201, description: 'Staff group created successfully' })
+    @ApiResponse({ status: 400, description: 'Staff group already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating position' })
     async createStaffGroups(@Body() body: StaffGroupsDto): Promise<{ message: string }> {
         return await this.staffGroupsService.createStaffGroups(body);
     }
 
     @Patch(':id')
-    @ApiBody({
-        schema: {
-            example: {
-                canViewRecords: false,
-                canAddRecords: false,
-                canEditRecords: false,
-                canDeleteRecords: false,
-                canAccessFiles: false,
-                fullAccess: false
-            }
-    }})
-    @ApiOperation({ summary: 'Обновить группу сотрудника' })
-    @ApiResponse({ status: 200, description: 'Группа успешно обновлена' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
+    @ApiBody({ type: UpdateStaffGroupsDto })
+    @ApiOperation({ summary: 'Update staff group' })
+    @ApiResponse({ status: 200, description: 'Staff group with ID successfully updated' })
+    @ApiResponse({ status: 400, description: 'Cannot update admin group' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Staff group with ID not found' })
     async updateStaffGroups(
         @Param('id', ValidateIdPipe) id: number,
         @Body() body: UpdateStaffGroupsDto,
         @Req() req: { user: IStaff }
     ): Promise<{ message: string }> {
+        console.log(req.user.id);
+
         if (req.user.id === 1) {
             throw new BadRequestException('Cannot update admin group');
         }
@@ -67,13 +60,20 @@ export class StaffGroupsController {
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить группу' })
-    @ApiResponse({ status: 200, description: 'Группа успешно удалена' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить группу или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Группа не найдена' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete staff group' })
+    @ApiResponse({ status: 200, description: 'Staff group with ID successfully deleted' })
+    @ApiResponse({
+        status: 400,
+        description: `
+        Possible errors:
+        - Cannot delete staff group with ID, as it is still referenced by other entities
+        - Cannot delete admin group
+        `
+    })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Staff group with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting staff group' })
     async deleteStaffGroups(@Param('id', ValidateIdPipe) id: number, @Req() req: { user: IStaff }): Promise<{ message: string }> {
         if (req.user.id === 1) {
             throw new BadRequestException('Cannot delete admin group');

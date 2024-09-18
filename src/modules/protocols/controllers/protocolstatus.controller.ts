@@ -16,36 +16,36 @@ export class ProtocolStatusController {
     constructor(private protocolStatusService: ProtocolStatusService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список всех статусов протокола' })
-    @ApiResponse({ type: ProtocolStatusDto })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of all protocol statuses' })
+    @ApiResponse({ status: 200, type: ProtocolStatusDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocol status from database' })
     @CheckPermissions('canViewRecords')
     async getProtocolStatus(): Promise<ProtocolStatus[]> {
         return await this.protocolStatusService.getProtocolStatus();
     }
 
     @Post()
-    @ApiOperation({ summary: 'Создать статус протокола' })
+    @ApiOperation({ summary: 'Create protocol status' })
     @ApiBody({ type: ProtocolStatusDto })
-    @ApiResponse({ status: 201, description: 'Статус протокола успешно создан' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
+    @ApiResponse({ status: 201, description: 'Protocol status created successfully' })
+    @ApiResponse({ status: 400, description: 'Protocol status already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating protocol status' })
     async createProtocolStatus(@Body() body: ProtocolStatusDto): Promise<{ message: string }> {
         return await this.protocolStatusService.createProtocolStatus(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить статус' })
-    @ApiResponse({ status: 200, description: 'Статус успешно удален' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить статус или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Статус не найден' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete protocol status' })
+    @ApiResponse({ status: 200, description: 'Protocol status with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete protocol status with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Protocol status with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting protocol status' })
     async deleteProtocolStatus(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.protocolStatusService.deleteProtocolStatus(id);
     }

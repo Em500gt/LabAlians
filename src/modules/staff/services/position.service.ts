@@ -24,7 +24,7 @@ export class PositionService {
             const position = await this.positionRepository.save(body);
             return { message: `Position ${position.position} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating position');
+            throw new InternalServerErrorException('Error creating position');
         }
     }
 

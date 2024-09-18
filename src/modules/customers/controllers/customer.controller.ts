@@ -16,11 +16,11 @@ export class CustomerController {
     constructor(private customerService: CustomerService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список всех заказчиков' })
+    @ApiOperation({ summary: 'Get a list of all customers' })
     @ApiResponse({
-        status: 200, description: 'Успешное получение списка заказчиков', schema: {
-            example: {
-                "id": 1,
+        status: 200, schema: {
+            example: [{
+                id: 1,
                 customerName: "Test",
                 address: "Test",
                 rasSch: "123353424",
@@ -33,69 +33,57 @@ export class CustomerController {
                 phone: "+375291111111",
                 fax: "+375291111111",
                 email: "test@gmail.com"
-            }
+            }]
         }
     })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Internal Server Error' })
     @CheckPermissions('canViewRecords')
     async findCustomer(): Promise<Customers[]> {
         return this.customerService.findCustomer();
     }
 
     @Post()
-    @ApiOperation({ summary: 'Создать нового Заказчика' })
+    @ApiOperation({ summary: 'Create a new Customer' })
     @ApiBody({ type: CustomerCreateDto })
-    @ApiResponse({ status: 201, description: 'Заказчик успешно создан' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
+    @ApiResponse({ status: 201, description: `Customer created successfully` })
+    @ApiResponse({ status: 400, description: 'Customer already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Customer type not found' })
     @CheckPermissions('canAddRecords')
     async createCustomer(@Body() body: CustomerCreateDto): Promise<{ message: string }> {
         return await this.customerService.createCustomer(body);
     }
 
     @Patch(':id')
-    @ApiOperation({ summary: 'Обновить информацию о заказчике' })
-    @ApiBody({
-        schema: {
-            example: {
-                customerName: "Test",
-                address: "Test",
-                rasSch: "123353424",
-                unp: 123456789,
-                bank: "Test",
-                bankAddress: "Test",
-                bic: 123456789,
-                okpo: 12345789,
-                passport: "Test",
-                phone: "+375291111111",
-                fax: "+375291111111",
-                email: "test@gmail.com",
-                customerTypeID: 1
-            }
-        }
+    @ApiOperation({ summary: 'Update customer information' })
+    @ApiBody({ type: CustomerUpdateDto })
+    @ApiResponse({ status: 200, description: 'Customer updated successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({
+        status: 404,
+        description: `
+        Possible errors:
+        - Customer with ID not found
+        - Customer type not found
+        `
     })
-    @ApiResponse({ status: 200, description: 'Заказчик успешно обновлен' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
     @CheckPermissions('canEditRecords')
     async updateCustomer(@Param('id', ValidateIdPipe) id: number, @Body() body: CustomerUpdateDto): Promise<{ message: string }> {
         return await this.customerService.updateCustomer(id, body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить заказчика' })
-    @ApiResponse({ status: 200, description: 'Заказчик успешно удален' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить заказчика или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Заказчик не найден' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete customer' })
+    @ApiResponse({ status: 200, description: 'Customer with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete customer with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Customer with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting customer' })
     async deleteCustomer(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.customerService.deleteCustomer(id);
     }

@@ -24,7 +24,7 @@ export class DivisionService {
             const division = await this.divisionRepository.save(body);
             return { message: `Division "${division.division}" created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating division');
+            throw new InternalServerErrorException('Error creating division');
         }
     }
 

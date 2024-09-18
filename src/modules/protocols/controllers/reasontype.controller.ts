@@ -16,42 +16,36 @@ export class ReasonTypeController {
     constructor(private reasonTypeService: ReasonTypeService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список оснований для работы' })
-    @ApiResponse({
-        status: 200, description: 'Успешное получение списка оснований', schema: {
-            example: {
-                id: 1,
-                type: 'test'
-            }
-        }
-    })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of reasons for work' })
+    @ApiResponse({ status: 200, type: ReasonTypeDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve reason types from database' })
     @CheckPermissions('canViewRecords')
     async getReasonType(): Promise<ReasonType[]> {
         return await this.reasonTypeService.getReasonType();
     }
 
     @Post()
-    @ApiBody({ description: 'Данные для записи', type: ReasonTypeDto })
-    @ApiOperation({ summary: 'Создать новое основание для работы' })
-    @ApiResponse({ status: 201, description: 'Основание для работы успешно создано' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
+    @ApiOperation({ summary: 'Create a new reason for work' })
+    @ApiBody({ type: ReasonTypeDto })
+    @ApiResponse({ status: 201, description: 'Work type created successfully' })
+    @ApiResponse({ status: 400, description: 'Reason type already exists' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Error creating reason type' })
     async createReasonType(@Body() body: ReasonTypeDto): Promise<{ message: string }> {
         return await this.reasonTypeService.createReasonType(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить основание для работы' })
-    @ApiResponse({ status: 200, description: 'Основание для работы успешно удалено' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить основание для работы или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Основание для работы не найдено' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Remove the reason for work' })
+    @ApiResponse({ status: 200, description: 'Reason type with ID successfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete reason type with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Reason type with ID not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting reason type' })
     async deleteReasonType(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return this.reasonTypeService.deleteReasonType(id);
     }

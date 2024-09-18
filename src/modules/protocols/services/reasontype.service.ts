@@ -26,9 +26,9 @@ export class ReasonTypeService {
         }
         try {
             const reasonType = await this.reasonTypeRepository.save(body);
-            return { message: `Work type ${reasonType.type} created successfully` };
+            return { message: `Reason type ${reasonType.type} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating reason type');
+            throw new InternalServerErrorException('Error creating reason type');
         }
     }
 
@@ -40,6 +40,9 @@ export class ReasonTypeService {
             }
             return { message: `Reason type with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete reason type with ID ${id}, as it is still referenced by other entities`);
             }

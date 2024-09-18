@@ -3,14 +3,21 @@ import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { ApiProperty } from "@nestjs/swagger";
 
 export class AccountCreateDto {
-  @ApiProperty({ example: 'johndoe', description: 'Логин сотрудника' })
+  @ApiProperty({
+    example: 1,
+    description: 'Unique identifier of the acoount',
+    readOnly: true,
+  })
+  id: number;
+
+  @ApiProperty({ example: 'johndoe', description: 'Employee login' })
   @IsString()
   @IsNotEmpty({ message: 'login is required' })
   @MinLength(4, { message: 'login must be at least 4 characters long' })
   @MaxLength(20, { message: 'login must not exceed 20 characters' })
   readonly login: string;
 
-  @ApiProperty({ example: 'P@ssw0rd', description: 'Пароль сотрудника' })
+  @ApiProperty({ example: 'P@ssw0rd', description: 'Employee password' })
   @IsString()
   @IsNotEmpty({ message: 'password is required' })
   @MinLength(8, { message: 'password must be at least 8 characters long' })
@@ -20,11 +27,18 @@ export class AccountCreateDto {
   })
   readonly password: string;
 
-  @ApiProperty({ example: 1, description: 'ID группы сотрудников' })
+  @ApiProperty({ example: 1, description: 'ID Staff group' })
   @IsNumber()
   @IsNotEmpty({ message: 'staffGroupID is required' })
   @Min(1, { message: "staffGroupID must be at least 1 " })
   readonly staffGroupID: number;
 }
 
-export class AccountUpdateDto extends OmitType(PartialType(AccountCreateDto), ['login', 'password'] as const) { }
+export class AccountUpdateDto extends PartialType(AccountCreateDto) {
+  @ApiProperty({
+    example: 1,
+    description: 'ID Staff group',
+    required: false
+  })
+  readonly staffGroupID?: number;
+}

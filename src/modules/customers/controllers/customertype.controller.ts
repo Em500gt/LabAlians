@@ -16,43 +16,42 @@ export class CustomerTypeController {
     constructor(private customerTypeService: CustomerTypeService) { }
 
     @Get()
-    @ApiOperation({ summary: 'Получить список всех типов заказчиков' })
-    @ApiResponse({
-        status: 200, description: 'Успешное получение списка типов заказчиков', schema: {
-            example: {
-                id: 1,
-                type: "Individual"
-            }
-        }
-    })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 500, description: 'Внутренняя ошибка сервера' })
+    @ApiOperation({ summary: 'Get a list of all customer types' })
+    @ApiResponse({ status: 200, type: CustomerTypeDto })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 500, description: 'Internal Server Error' })
     @CheckPermissions('canViewRecords')
     async findCustomerType(): Promise<CustomerTypes[]> {
         return await this.customerTypeService.findCustomerType();
     }
 
     @Post()
-    @ApiOperation({ summary: 'Создать новый тип заказчика' })
+    @ApiOperation({ summary: 'Create a new customer type' })
     @ApiBody({ type: CustomerTypeDto })
-    @ApiResponse({ status: 201, description: 'Тип заказчика успешно создан' })
-    @ApiResponse({ status: 400, description: 'Ошибка валидации или дублирование данных' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Не найдены данные в таблицах' })
+    @ApiResponse({ status: 201, description: 'Customer type created successfully' })
+    @ApiResponse({
+        status: 400,
+        description: `
+        Possible errors:
+        - Error creating customer type
+        - Customer type already exists
+        `
+    })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
     async createCustomerType(@Body() body: CustomerTypeDto): Promise<{ message: string }> {
         return await this.customerTypeService.createCustomerType(body);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'Удалить тип заказчика' })
-    @ApiResponse({ status: 200, description: 'Тип заказчика успешно удален' })
-    @ApiResponse({ status: 400, description: 'Невозможно удалить тип заказчика или связанные записи' })
-    @ApiResponse({ status: 401, description: 'Неавторизован' })
-    @ApiResponse({ status: 403, description: 'Нету прав доступа' })
-    @ApiResponse({ status: 404, description: 'Тип заказчика не найден' })
-    @ApiResponse({ status: 500, description: 'Ошибка с удалением' })
+    @ApiOperation({ summary: 'Delete customer type' })
+    @ApiResponse({ status: 200, description: 'Customer type with ID succesfully deleted' })
+    @ApiResponse({ status: 400, description: 'Cannot delete customer type with ID, as it is still referenced by other entities' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Customer type with not found' })
+    @ApiResponse({ status: 500, description: 'Error deleting customer type' })
     async deleteCustomerType(@Param('id', ValidateIdPipe) id: number): Promise<{ message: string }> {
         return await this.customerTypeService.deleteCustomerType(id);
     }

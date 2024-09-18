@@ -3,8 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CustomerTypeDto {
     @ApiProperty({
+        example: 1,
+        description: 'Unique identifier of the customer type',
+        readOnly: true, 
+    })
+    id: number;
+
+    @ApiProperty({
         example: 'Individual',
-        description: 'Тип клиента, должен содержать от 5 до 32 символов',
+        description: 'Client type, must be between 5 and 32 characters',
     })
     @IsString()
     @IsNotEmpty({ message: 'Customer type is required' })

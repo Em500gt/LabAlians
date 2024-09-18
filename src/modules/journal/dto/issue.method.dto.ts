@@ -3,11 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class IssueMethodDto {
     @ApiProperty({
-        description: 'Метод выдачи',
+        example: 1,
+        description: 'Unique identifier of the customer type',
+        readOnly: true,
+    })
+    id: number;
+    
+    @ApiProperty({
+        description: 'Journal method',
         example: 'Courier',
         minLength: 5,
         maxLength: 32,
-        type: String,
     })
     @IsString()
     @IsNotEmpty({ message: 'Method is required' })

@@ -30,7 +30,7 @@ export class WorkTypeService {
             return { message: `Work type ${workType.type} created successfully` }
         }
         catch (error) {
-            throw new BadRequestException('Error creating work type')
+            throw new InternalServerErrorException('Error creating work type')
         }
     }
 
@@ -42,6 +42,9 @@ export class WorkTypeService {
             }
             return { message: `Work type with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete work type with ID ${id}, as it is still referenced by other entities`);
             }
