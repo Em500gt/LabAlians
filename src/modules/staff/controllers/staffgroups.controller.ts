@@ -42,7 +42,7 @@ export class StaffGroupsController {
     @ApiBody({ type: UpdateStaffGroupsDto })
     @ApiOperation({ summary: 'Update staff group' })
     @ApiResponse({ status: 200, description: 'Staff group with ID successfully updated' })
-    @ApiResponse({ status: 400, description: 'Cannot update admin group' })
+    @ApiResponse({ status: 400, description: 'Cannot update or delete admin group' })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
     @ApiResponse({ status: 404, description: 'Staff group with ID not found' })
@@ -51,12 +51,8 @@ export class StaffGroupsController {
         @Body() body: UpdateStaffGroupsDto,
         @Req() req: { user: IStaff }
     ): Promise<{ message: string }> {
-        console.log(req.user.id);
-
-        if (req.user.id === 1) {
-            throw new BadRequestException('Cannot update admin group');
-        }
-        return this.staffGroupsService.updateStaffGroups(id, body);
+        const { login } = req.user;
+        return this.staffGroupsService.updateStaffGroups(id, body, login);
     }
 
     @Delete(':id')
@@ -67,7 +63,7 @@ export class StaffGroupsController {
         description: `
         Possible errors:
         - Cannot delete staff group with ID, as it is still referenced by other entities
-        - Cannot delete admin group
+        - Cannot update or delete admin group
         `
     })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -75,9 +71,7 @@ export class StaffGroupsController {
     @ApiResponse({ status: 404, description: 'Staff group with ID not found' })
     @ApiResponse({ status: 500, description: 'Error deleting staff group' })
     async deleteStaffGroups(@Param('id', ValidateIdPipe) id: number, @Req() req: { user: IStaff }): Promise<{ message: string }> {
-        if (req.user.id === 1) {
-            throw new BadRequestException('Cannot delete admin group');
-        }
-        return await this.staffGroupsService.deleteStaffGroups(id);
+        const { login } = req.user;
+        return await this.staffGroupsService.deleteStaffGroups(id, login);
     }
 }
