@@ -24,7 +24,7 @@ export class DivisionService {
             const division = await this.divisionRepository.save(body);
             return { message: `Division "${division.division}" created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating division');
+            throw new InternalServerErrorException('Error creating division');
         }
     }
 
@@ -36,6 +36,9 @@ export class DivisionService {
             }
             return { message: `Division with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete division with ID ${id}, as it is still referenced by other entities`);
             }

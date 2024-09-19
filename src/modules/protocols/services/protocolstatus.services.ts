@@ -28,7 +28,7 @@ export class ProtocolStatusService {
             const protocolStatus = await this.protocolStatusRepository.save(body);
             return { message: `Protocol status ${protocolStatus.status} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating protocol status');
+            throw new InternalServerErrorException('Error creating protocol status');
         }
     }
 
@@ -40,6 +40,9 @@ export class ProtocolStatusService {
             }
             return { message: `Protocol status with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete protocol status with ID ${id}, as it is still referenced by other entities`);
             }

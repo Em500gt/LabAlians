@@ -24,7 +24,7 @@ export class PositionService {
             const position = await this.positionRepository.save(body);
             return { message: `Position ${position.position} created successfully` };
         } catch (error) {
-            throw new BadRequestException('Error creating position');
+            throw new InternalServerErrorException('Error creating position');
         }
     }
 
@@ -36,6 +36,9 @@ export class PositionService {
             }
             return { message: `Position with ID ${id} successfully deleted` };
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
             if (error.code === '23503') {
                 throw new BadRequestException(`Cannot delete position with ID ${id}, as it is still referenced by other entities`);
             }
