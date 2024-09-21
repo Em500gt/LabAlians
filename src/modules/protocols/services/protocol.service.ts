@@ -11,7 +11,6 @@ import { IssueJournal } from "modules/journal/entities/issue.journal.entity";
 import { IssueJournalDto } from "modules/journal/dto/issue.journal.dto";
 import { IssueMethod } from "modules/journal/entities/issue.method.entity";
 import { ProtocolFiles } from "../entities/protocol.files.entity";
-import { IStaff } from "auth/types/types";
 
 @Injectable()
 export class ProtocolService {
@@ -34,7 +33,22 @@ export class ProtocolService {
 
     async getProtocols(year?: number): Promise<Protocols[]> {
         try {
-            const query = this.protocolsRepository.createQueryBuilder('protocols').leftJoinAndSelect('protocols.staffID', 'staff');
+            const query = this.protocolsRepository.createQueryBuilder('protocols')
+                .leftJoinAndSelect('protocols.staffID', 'staff')
+                .leftJoinAndSelect('protocols.reasonTypeID', 'reasonType')
+                .leftJoinAndSelect('protocols.workTypeID', 'workType')
+                .leftJoinAndSelect('protocols.customerID', 'customer')
+                .select([
+                    'protocols.id',
+                    'protocols.workDate',
+                    'protocols.workSheetNum',
+                    'protocols.workObject',
+                    'protocols.isLssied',
+                    'staff.firstname',
+                    'staff.lastname',
+                    'workType.type',
+                    'customer.customerName'
+                ]);
             if (year) {
                 query.where('EXTRACT(YEAR FROM protocols.creationDate) = :year', { year });
             }
@@ -44,7 +58,32 @@ export class ProtocolService {
             throw new InternalServerErrorException('Failed to retrieve protocols from database');
         }
     }
-
+    async getOneProtocol(id: number): Promise<Protocols> {
+        try {
+            const query = this.protocolsRepository.createQueryBuilder('protocols')
+                .leftJoin('protocols.staffID', 'staff')
+                .addSelect(['staff.firstname', 'staff.lastname', 'staff.tabelNum'])
+                .leftJoin('protocols.reasonTypeID', 'reasonType')
+                .addSelect(['reasonType.type'])
+                .leftJoin('protocols.workTypeID', 'workType')
+                .addSelect(['workType.type'])
+                .leftJoin('protocols.protocolStatusID', 'protocolStatus')
+                .addSelect(['protocolStatus.status'])
+                .leftJoin('protocols.customerID', 'customer')
+                .addSelect(['customer.customerName', 'customer.phone'])
+                .where('protocols.id = :id', { id });
+            const protocol = await query.getOne();
+            if (!protocol) {
+                throw new NotFoundException(`Protocol with ID ${id} not found`)
+            }
+            return protocol;
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error
+            }
+            throw new InternalServerErrorException('Failed to retrieve protocol from database');
+        }
+    }
     async createProtocol(id: number, body: ProtocolCreateDto): Promise<{ message: string }> {
         const [reasonTypeID, workTypeID, protocolStatusID, customerID] = await Promise.all([
             this.checkReasonType(body.reasonTypeID),

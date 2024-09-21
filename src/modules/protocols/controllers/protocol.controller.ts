@@ -23,19 +23,19 @@ export class ProtocolController {
         status: 200, schema: {
             example: {
                 id: 7,
-                isAccreditation: true,
-                creationDate: "2024-09-14T13:23:36.126Z",
                 workDate: "2024-09-13T00:00:00.000Z",
                 workObject: "Home Test",
-                copies: 1,
                 workSheetNum: 1300,
                 isLssied: false,
-                note: null,
                 staffID: {
-                    id: 2,
                     firstname: "Test",
                     lastname: "Test",
-                    tabelNum: 1300
+                },
+                workTypeID: {
+                    type: "Test"
+                },
+                customerID: {
+                    customerName: "Test"
                 }
             }
         }
@@ -47,6 +47,50 @@ export class ProtocolController {
     @CheckPermissions('canViewRecords')
     async getProtocols(@Query('year') year?: number): Promise<Protocols[]> {
         return await this.protocolService.getProtocols(year);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get list of one protocol' })
+    @ApiResponse({
+        status: 200, schema: {
+            example: {
+                id: 7,
+                isAccreditation: true,
+                creationDate: "2024-09-14T13:23:36.126Z",
+                workDate: "2024-09-13T00:00:00.000Z",
+                workObject: "Home Test",
+                copies: 1,
+                workSheetNum: 1300,
+                isLssied: false,
+                note: null,
+                staffID: {
+                    firstname: "Test",
+                    lastname: "Test",
+                    tabelNum: 1300
+                },
+                reasonTypeID: {
+                    type: "Test"
+                },
+                workTypeID: {
+                    type: "Test"
+                },
+                protocolStatusID: {
+                    status: "Test"
+                },
+                customerID: {
+                    customerName: "Test",
+                    phone: "+375291234567"
+                }
+            }
+        }
+    })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'You do not have the required permissions' })
+    @ApiResponse({ status: 404, description: 'Protocol with ID not found' })
+    @ApiResponse({ status: 500, description: 'Failed to retrieve protocols from database' })
+    @CheckPermissions('canViewRecords')
+    async getOneProtocol(@Param('id', ValidateIdPipe) id: number): Promise<Protocols> {
+        return await this.protocolService.getOneProtocol(id);
     }
 
     @Post()
