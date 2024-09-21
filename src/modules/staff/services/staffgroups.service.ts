@@ -10,7 +10,6 @@ export class StaffGroupsService {
     constructor(
         @InjectRepository(StaffGroups)
         private staffGroupsRepository: Repository<StaffGroups>,
-
         @InjectRepository(Accounts)
         private readonly accountRepository: Repository<Accounts>
     ) { }

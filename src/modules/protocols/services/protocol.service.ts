@@ -17,16 +17,12 @@ export class ProtocolService {
     constructor(
         @InjectRepository(Protocols)
         private readonly protocolsRepository: Repository<Protocols>,
-
         @InjectRepository(ReasonType)
         private readonly reasonTypeRepository: Repository<ReasonType>,
-
         @InjectRepository(WorkType)
         private readonly workTypeRepository: Repository<WorkType>,
-
         @InjectRepository(ProtocolStatus)
         private readonly protocolStatusRepository: Repository<ProtocolStatus>,
-
         @InjectRepository(Customers)
         private readonly customersRepository: Repository<Customers>
     ) { }
@@ -244,7 +240,6 @@ export class ProtocolService {
             { field: 'protocolStatusID', errorMessage: 'Protocol Status is missing in the protocol' },
             { field: 'customerID', errorMessage: 'Customer is missing in the protocol' },
         ];
-
         for (const { field, errorMessage } of requiredFields) {
             if (!protocol[field]) {
                 throw new BadRequestException(errorMessage);

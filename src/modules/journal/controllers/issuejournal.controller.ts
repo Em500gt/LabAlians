@@ -3,8 +3,7 @@ import { IssueJournal } from "../entities/issue.journal.entity";
 import { IssueJournalService } from "../services/issuejournal.service";
 import { PermissionsGuard } from "auth/guard/permissions.guard";
 import { CheckPermissions } from "common/decorators/check-permissions.decorator";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiQuery } from "@nestjs/swagger";
-import { IssueJournalDto } from "../dto/issue.journal.dto";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from "@nestjs/swagger";
 
 @ApiTags('Issue journal')
 @ApiBearerAuth()

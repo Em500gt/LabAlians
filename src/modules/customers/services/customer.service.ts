@@ -10,7 +10,6 @@ export class CustomerService {
     constructor(
         @InjectRepository(Customers)
         private customersRepository: Repository<Customers>,
-
         @InjectRepository(CustomerTypes)
         private customersTypeRepository: Repository<CustomerTypes>
     ) { }

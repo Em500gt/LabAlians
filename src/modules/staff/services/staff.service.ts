@@ -15,21 +15,15 @@ export class StaffService {
     constructor(
         @InjectRepository(Staff)
         private staffRepository: Repository<Staff>,
-
         @InjectRepository(Positions)
         private readonly positionsRepository: Repository<Positions>,
-
         @InjectRepository(Divisions)
         private readonly divisionsRepository: Repository<Divisions>,
-
         @InjectRepository(StaffGroups)
         private readonly staffGroupsRepository: Repository<StaffGroups>,
-
         @InjectRepository(Accounts)
         private readonly accountRepository: Repository<Accounts>,
-
         private configService: ConfigService
-
     ) { }
 
     async findStaff(): Promise<Staff[]> {
@@ -55,10 +49,8 @@ export class StaffService {
         await this.validatePositionExists(staffCreateData.positionID);
         await this.validateDivisionExists(staffCreateData.divisionID);
         await this.validateStaffGroupExists(accountCreateDto.staffGroupID);
-
         const saltRounds = this.getSaltRounds();
         const hashedPassword = await bcrypt.hash(accountCreateDto.password, saltRounds);
-
         return await this.staffRepository.manager.transaction(async (transactionalEntityManager: EntityManager) => {
             try {
                 const staff = await transactionalEntityManager.save(Staff, {
@@ -68,7 +60,6 @@ export class StaffService {
                     positionID: { id: staffCreateData.positionID } as Positions,
                     divisionID: { id: staffCreateData.divisionID } as Divisions,
                 });
-
                 await transactionalEntityManager.save(Accounts, {
                     login: accountCreateDto.login,
                     password: hashedPassword,
@@ -79,7 +70,6 @@ export class StaffService {
                 return { message: 'Staff created successfully' };
             }
             catch (error) {
-                console.log(error.message);
                 throw new InternalServerErrorException('An error occurred while processing the transaction.');
             }
         })
@@ -93,7 +83,6 @@ export class StaffService {
                     throw new NotFoundException(`Staff with ID ${id} not found`);
                 }
                 const {staffUpdateDto, acountUpdateDto} = body;
-
                 if (staffUpdateDto.firstname) {
                     existingStaff.firstname = staffUpdateDto.firstname;
                 }
@@ -112,27 +101,21 @@ export class StaffService {
                     await this.validateDivisionExists(staffUpdateDto.divisionID);
                     existingStaff.divisionID = { id: staffUpdateDto.divisionID } as Divisions;
                 }
-
                 const updatedStaff = await transactionalEntityManager.save(Staff, existingStaff);
-
                 const existingAccount = await transactionalEntityManager.findOne(Accounts, {
                     where: { staff: { id: updatedStaff.id } },
                 });
-
                 if (existingAccount) {
                     let accountUpdated = false;
-
                     if (acountUpdateDto.staffGroupID) {
                         await this.validateStaffGroupExists(acountUpdateDto.staffGroupID);
                         existingAccount.staffGroup = { id: acountUpdateDto.staffGroupID } as StaffGroups;
                         accountUpdated = true;
                     }
-
                     if (accountUpdated) {
                         await transactionalEntityManager.save(Accounts, existingAccount);
                     }
                 }
-
                 return { message: 'Staff updated successfully' };
             } catch (error) {
                 if (error instanceof BadRequestException || error instanceof NotFoundException) {
