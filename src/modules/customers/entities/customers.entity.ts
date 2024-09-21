@@ -1,52 +1,52 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 import { CustomerTypes } from "./customer.type.entity";
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
+import { Protocols } from "../../protocols/entities/protocols.entity";
 
 @Entity()
 export class Customers {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     customerName: string;
 
     @Column()
     address: string;
 
-    @Column()
+    @Column({nullable: true})
     rasSch: string;
 
-    @Column()
+    @Column({nullable: true})
     unp: number;
 
-    @Column()
+    @Column({nullable: true})
     bank: string;
 
-    @Column()
+    @Column({nullable: true})
     bankAddress: string;
 
-    @Column()
+    @Column({nullable: true})
     bic: number;
 
-    @Column()
+    @Column({nullable: true})
     okpo: number;
 
-    @Column()
+    @Column({nullable: true})
     passport: string;
 
     @Column()
     phone: string;
 
-    @Column()
+    @Column({nullable: true})
     fax: string;
 
-    @Column()
+    @Column({nullable: true})
     email: string;
 
     @ManyToOne(() => CustomerTypes, customertype => customertype.customer)
     @JoinColumn({ name: "customerTypeID" })
-    customertype: CustomerTypes;
+    customerTypeID: CustomerTypes;
 
-    @OneToMany(() => Protocols, protocols => protocols.customers)
+    @OneToMany(() => Protocols, protocols => protocols.customerID)
     protocols: Protocols[];
 }

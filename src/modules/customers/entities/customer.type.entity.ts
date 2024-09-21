@@ -9,6 +9,6 @@ export class CustomerTypes {
     @Column()
     type: string;
 
-    @OneToMany(() => Customers, customer => customer.customertype)
+    @OneToMany(() => Customers, customer => customer.customerTypeID)
     customer: Customers[];
 }

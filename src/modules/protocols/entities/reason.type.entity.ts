@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
-import { Protocols } from "./protocols.entitiy";
+import { Protocols } from "./protocols.entity";
 
 @Entity()
 export class ReasonType {
@@ -9,6 +9,6 @@ export class ReasonType {
     @Column()
     type: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.reasontype)
+    @OneToMany(() => Protocols, protocols => protocols.reasonTypeID)
     protocols: Protocols[];
 }

@@ -1,5 +1,5 @@
-import { UserGroups } from "./user.groups.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
+import { StaffGroups } from "./staff.groups.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, } from "typeorm";
 import { Staff } from "./staff.entity";
 
 @Entity()
@@ -7,17 +7,17 @@ export class Accounts {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     login: string;
 
     @Column()
     password: string;
 
-    @ManyToOne(() => UserGroups, userGroup => userGroup.account)
-    @JoinColumn({ name: "userGroupID" })
-    userGroup: UserGroups;
+    @ManyToOne(() => StaffGroups, staffGroup => staffGroup.accounts, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: "staffGroupID" })
+    staffGroup: StaffGroups;
 
-    @ManyToOne(() => Staff, staff => staff.account)
+    @OneToOne(() => Staff, staff => staff.account, { onDelete: 'CASCADE' })
     @JoinColumn({ name: "staffID" })
     staff: Staff;
 

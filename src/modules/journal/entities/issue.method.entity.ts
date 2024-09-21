@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { IssueJournal } from "./issue.journal.entity";
 
 @Entity()
@@ -9,6 +9,6 @@ export class IssueMethod {
     @Column()
     method: string;
 
-    @OneToMany(() => IssueJournal, issuejournal => issuejournal.issuemethod)
-    issuejournal: IssueJournal[];
+    @OneToMany(() => IssueJournal, issuejournal => issuejournal.issueMethodID)
+    issuejournalID: IssueJournal[];
 }

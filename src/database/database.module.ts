@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
     imports: [
@@ -9,7 +8,7 @@ import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
             useFactory: async (configService: ConfigService) => ({
                 type: 'postgres',
                 host: configService.getOrThrow('DB_HOST'),
-                port: Number(configService.getOrThrow('DB_PORT')) || 5432,
+                port: Number(configService.getOrThrow('DB_PORT')),
                 username: configService.getOrThrow('DB_USERNAME'),
                 password: configService.getOrThrow('DB_PASSWORD'),
                 database: configService.getOrThrow('DB_DATABASE'),

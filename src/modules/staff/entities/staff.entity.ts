@@ -1,8 +1,8 @@
-import { Protocols } from "src/modules/protocols/entities/protocols.entitiy";
-import { Accounts } from "src/modules/staff/entities/accounts.entity";
-import { Divisions } from "src/modules/staff/entities/divisions.entity";
-import { Positions } from "src/modules/staff/entities/positions.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
+import { Protocols } from "../../protocols/entities/protocols.entity";
+import { Accounts } from "./accounts.entity";
+import { Divisions } from "./divisions.entity";
+import { Positions } from "./positions.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany, OneToOne } from "typeorm";
 
 @Entity()
 export class Staff {
@@ -10,25 +10,25 @@ export class Staff {
     id: number;
 
     @Column()
-    fistname: string;
+    firstname: string;
 
     @Column()
     lastname: string;
 
-    @Column()
+    @Column({ unique: true })
     tabelNum: number;
 
     @ManyToOne(() => Positions, position => position.staff)
     @JoinColumn({ name: "positionID" })
-    position: Positions;
+    positionID: Positions;
 
-    @OneToMany(() => Accounts, account => account.staff)
-    account: Accounts[];
+    @OneToOne(() => Accounts, account => account.staff,  { cascade: true, onDelete: 'CASCADE' })
+    account: Accounts;
 
     @ManyToOne(() => Divisions, division => division.staff)
     @JoinColumn({ name: "divisionID" })
-    division: Divisions;
+    divisionID: Divisions;
 
-    @OneToMany(() => Protocols, protocols => protocols.staff)
+    @OneToMany(() => Protocols, protocols => protocols.staffID)
     protocols: Protocols[];
 }

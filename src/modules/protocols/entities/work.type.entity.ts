@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
-import { Protocols } from "./protocols.entitiy";
+import { Protocols } from "./protocols.entity";
 
 @Entity()
 export class WorkType {
@@ -9,6 +9,6 @@ export class WorkType {
     @Column()
     type: string;
 
-    @OneToMany(() => Protocols, protocols => protocols.worktype)
+    @OneToMany(() => Protocols, protocols => protocols.workTypeID)
     protocols: Protocols[];
 }
