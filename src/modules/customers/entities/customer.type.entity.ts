@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 import { Customers } from "./customers.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -8,6 +8,7 @@ export class CustomerTypes {
     id: number;
 
     @Column()
+    @Index()
     type: string;
 
     @OneToMany(() => Customers, customer => customer.customerTypeID)

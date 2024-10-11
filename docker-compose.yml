@@ -6,12 +6,14 @@ services:
       dockerfile: Dockerfile
     environment:
       - DB_HOST=db
+      - REDIS_HOST=redis  # Добавляем переменную окружения для Redis
     ports:
       - "${PORT}:${PORT}" 
     env_file:
       - .env 
     depends_on:
       - db 
+      - redis 
     volumes:
       - .:/usr/src/app
     command: npm run start:prod
@@ -25,12 +27,12 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     ports:
-      - "${DB_PORT}:5432"  # Пробрасываем порт для PostgreSQL
+      - "${DB_PORT}:5432" 
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
       - nest-network
-      
+
   migration:
     build:
       context: .
@@ -44,6 +46,13 @@ services:
     command: npm run migrate
     depends_on:
       - db
+    networks:
+      - nest-network
+
+  redis:  
+    image: redis:latest
+    ports:
+      - "6379:6379"  
     networks:
       - nest-network
 

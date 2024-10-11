@@ -1,5 +1,5 @@
 import { Staff } from "./staff.entity";
-import { Entity, OneToMany, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, OneToMany, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
 export class Positions {
@@ -7,6 +7,7 @@ export class Positions {
     id: number;
 
     @Column({ unique: true })
+    @Index()
     position: string;
 
     @OneToMany(() => Staff, staff => staff.positionID, { onDelete: 'CASCADE' })

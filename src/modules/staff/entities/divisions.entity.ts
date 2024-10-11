@@ -1,5 +1,5 @@
 import { Staff } from "./staff.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 
 @Entity()
 export class Divisions {
@@ -7,6 +7,7 @@ export class Divisions {
     id: number;
 
     @Column({ unique: true })
+    @Index()
     division: string;
 
     @OneToMany(() => Staff, staff => staff.divisionID)

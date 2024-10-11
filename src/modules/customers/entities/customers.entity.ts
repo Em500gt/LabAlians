@@ -1,13 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 import { CustomerTypes } from "./customer.type.entity";
 import { Protocols } from "../../protocols/entities/protocols.entity";
 
 @Entity()
 export class Customers {
     @PrimaryGeneratedColumn()
+    @Index()
     id: number;
 
     @Column({ unique: true })
+    @Index()
     customerName: string;
 
     @Column()
@@ -45,6 +47,7 @@ export class Customers {
 
     @ManyToOne(() => CustomerTypes, customertype => customertype.customer)
     @JoinColumn({ name: "customerTypeID" })
+    @Index()
     customerTypeID: CustomerTypes;
 
     @OneToMany(() => Protocols, protocols => protocols.customerID)

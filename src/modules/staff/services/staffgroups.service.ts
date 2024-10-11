@@ -1,9 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { StaffGroups } from "../entities/staff.groups.entity";
 import { Repository } from "typeorm";
 import { StaffGroupsDto, UpdateStaffGroupsDto } from "../dto/staff.groups.dto";
 import { Accounts } from "../entities/accounts.entity";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class StaffGroupsService {
@@ -12,7 +14,8 @@ export class StaffGroupsService {
         private staffGroupsRepository: Repository<StaffGroups>,
 
         @InjectRepository(Accounts)
-        private readonly accountRepository: Repository<Accounts>
+        private readonly accountRepository: Repository<Accounts>,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
     async getStaffGroups(): Promise<StaffGroups[]> {
@@ -36,6 +39,7 @@ export class StaffGroupsService {
         }
         await this.checkAdmin(login, id);
         await this.staffGroupsRepository.update(id, body);
+        await this.clearLoginCache();
         return { message: `Staff group with ID ${id} successfully updated` };
     }
 
@@ -46,6 +50,7 @@ export class StaffGroupsService {
             if (result.affected === 0) {
                 throw new NotFoundException(`Staff group with ID ${id} not found`);
             }
+            await this.clearLoginCache();
             return { message: `Staff group with ID ${id} successfully deleted` };
         } catch (error) {
             if (error instanceof NotFoundException || error instanceof BadRequestException) {
@@ -77,6 +82,13 @@ export class StaffGroupsService {
             .getOne();
         if (result?.staffGroup.id === staffGroupID) {
             throw new BadRequestException('Cannot update or delete admin group');
+        }
+    }
+
+    private async clearLoginCache() {
+        const keys = await this.cacheManager.store.keys('login_*');
+        for (const key of keys) {
+            await this.cacheManager.del(key);
         }
     }
 }

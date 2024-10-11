@@ -38,7 +38,25 @@ export class StaffController {
 
     @Post()
     @ApiOperation({ summary: 'Create a new staff' })
-    @ApiBody({ type: CombinedDto })
+    @ApiBody({
+        type: CombinedDto,
+        examples: {
+            validRequest: {
+                summary: 'Valid request example',
+                description: 'A valid request to create a new staff member',
+                value: {
+                    firstname: "Test",
+                    lastname: "Testovich",
+                    tabelNum: 2,
+                    positionID: 1,
+                    divisionID: 1,
+                    login: "Tests",
+                    password: "Test*123456789",
+                    staffGroupID: 1
+                },
+            },
+        },
+    })
     @ApiResponse({ status: 201, description: 'Staff created successfully' })
     @ApiResponse({
         status: 400,
@@ -74,7 +92,23 @@ export class StaffController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update staff information' })
-    @ApiBody({ type: CombinedUpdateDto })
+    @ApiBody({
+        type: CombinedUpdateDto,
+        examples: {
+            validRequest: {
+                summary: 'Valid request example',
+                description: 'A valid request to create a new staff member',
+                value: {
+                    firstname: "Test",
+                    lastname: "Testovich",
+                    tabelNum: 2,
+                    positionID: 1,
+                    divisionID: 1,
+                    staffGroupID: 1
+                },
+            },
+        },
+    })
     @ApiResponse({ status: 200, description: 'Staff updated successfully' })
     @ApiResponse({ status: 400, description: 'Tabel number already exists' })
     @ApiResponse({ status: 401, description: 'Unauthorized' })

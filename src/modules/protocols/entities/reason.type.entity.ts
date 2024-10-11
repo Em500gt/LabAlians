@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 import { Protocols } from "./protocols.entity";
 
 @Entity()
@@ -7,6 +7,7 @@ export class ReasonType {
     id: number;
 
     @Column()
+    @Index()
     type: string;
 
     @OneToMany(() => Protocols, protocols => protocols.reasonTypeID)

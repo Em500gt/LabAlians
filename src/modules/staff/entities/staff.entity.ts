@@ -2,11 +2,12 @@ import { Protocols } from "../../protocols/entities/protocols.entity";
 import { Accounts } from "./accounts.entity";
 import { Divisions } from "./divisions.entity";
 import { Positions } from "./positions.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany, OneToOne, Index } from "typeorm";
 
 @Entity()
 export class Staff {
     @PrimaryGeneratedColumn()
+    @Index()
     id: number;
 
     @Column()
@@ -16,10 +17,12 @@ export class Staff {
     lastname: string;
 
     @Column({ unique: true })
+    @Index()
     tabelNum: number;
 
     @ManyToOne(() => Positions, position => position.staff)
     @JoinColumn({ name: "positionID" })
+    @Index()
     positionID: Positions;
 
     @OneToOne(() => Accounts, account => account.staff,  { cascade: true, onDelete: 'CASCADE' })
@@ -27,6 +30,7 @@ export class Staff {
 
     @ManyToOne(() => Divisions, division => division.staff)
     @JoinColumn({ name: "divisionID" })
+    @Index()
     divisionID: Divisions;
 
     @OneToMany(() => Protocols, protocols => protocols.staffID)

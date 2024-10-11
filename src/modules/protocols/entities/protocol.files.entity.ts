@@ -1,9 +1,10 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, } from "typeorm";
+import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn, } from "typeorm";
 import { Protocols } from "./protocols.entity";
 
 @Entity()
 export class ProtocolFiles {
     @PrimaryGeneratedColumn()
+    @Index()
     id: number;
 
     @Column()
